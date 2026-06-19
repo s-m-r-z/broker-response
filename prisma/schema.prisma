@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model BrokerResponse {
+  id              String      @id @default(cuid())
+  brokerName      String
+  brokerEmail     String
+  responseContent String
+  tag             String
+  tier            String?
+  status          String      @default("OPEN")
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  actions         ActionLog[]
+}
+
+model ActionLog {
+  id           String         @id @default(cuid())
+  responseId   String
+  response     BrokerResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  type         String
+  emailTo      String?
+  emailSubject String?
+  emailBody    String?
+  note         String?
+  createdAt    DateTime       @default(now())
+}
