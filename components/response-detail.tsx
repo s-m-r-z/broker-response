@@ -42,7 +42,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
   if (!response) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-zinc-950 text-zinc-600">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-white text-zinc-400 dark:bg-zinc-950 dark:text-zinc-600">
         <Inbox className="h-10 w-10" />
         <p className="text-sm">Select a response to view details</p>
       </div>
@@ -50,12 +50,12 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
   }
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-950 overflow-hidden">
+    <div className="flex flex-1 flex-col bg-white overflow-hidden dark:bg-zinc-950">
       {/* Header */}
-      <div className="border-b border-zinc-800 px-6 py-4">
+      <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-zinc-100">{response.brokerName}</h2>
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{response.brokerName}</h2>
             <p className="text-sm text-zinc-500 mt-0.5">{response.brokerEmail}</p>
           </div>
           <div className="flex flex-col items-end gap-1.5">
@@ -64,7 +64,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-600">
+        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-600">
           {response.tier && (
             <span className="capitalize">{response.tier.replace('_', ' ')}</span>
           )}
@@ -73,7 +73,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
       </div>
 
       {/* Actions */}
-      <div className="border-b border-zinc-800 px-6 py-3 flex flex-wrap items-center gap-2">
+      <div className="border-b border-zinc-200 px-6 py-3 flex flex-wrap items-center gap-2 dark:border-zinc-800">
         <Button size="sm" onClick={onCompose}>
           <Mail className="h-3.5 w-3.5" />
           Email Broker
@@ -112,7 +112,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
           variant="ghost"
           onClick={() => handle('RESOLVED')}
           disabled={!!loadingAction || response.status === 'RESOLVED'}
-          className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+          className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-500/10"
         >
           {loadingAction === 'RESOLVED' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -125,22 +125,20 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
       {/* Response content + action history */}
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-        {/* Email content */}
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
             Broker Response
           </p>
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-            <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="text-sm text-zinc-700 leading-relaxed whitespace-pre-wrap dark:text-zinc-300">
               {response.responseContent}
             </p>
           </div>
         </div>
 
-        {/* Action history */}
         {response.actions.length > 0 && (
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-600 mb-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
               Action History
             </p>
             <div className="space-y-2">
@@ -157,10 +155,10 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
 function ActionItem({ action }: { action: ActionLog }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-900 p-3">
-      <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-600" />
+    <div className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-400 dark:text-zinc-600" />
       <div className="min-w-0">
-        <p className="text-xs font-medium text-zinc-300">
+        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
           {ACTION_LABELS[action.type] ?? action.type}
         </p>
         {action.emailTo && (
@@ -170,9 +168,9 @@ function ActionItem({ action }: { action: ActionLog }) {
           <p className="text-xs text-zinc-500">Subject: {action.emailSubject}</p>
         )}
         {action.note && (
-          <p className="text-xs text-zinc-400 mt-1">{action.note}</p>
+          <p className="text-xs text-zinc-600 mt-1 dark:text-zinc-400">{action.note}</p>
         )}
-        <p className="text-[10px] text-zinc-600 mt-1">{formatRelativeTime(action.createdAt)}</p>
+        <p className="text-[10px] text-zinc-400 mt-1 dark:text-zinc-600">{formatRelativeTime(action.createdAt)}</p>
       </div>
     </div>
   )

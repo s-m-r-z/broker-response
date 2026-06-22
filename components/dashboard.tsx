@@ -41,7 +41,6 @@ export function Dashboard() {
     fetchResponses()
   }, [fetchResponses])
 
-  // Re-fetch and re-select updated response after an action
   async function refreshSelected(id: string) {
     await fetchResponses()
     const res = await fetch(`/api/responses/${id}`)
@@ -60,7 +59,6 @@ export function Dashboard() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     )
-    // Deselect detail view when multi-selecting
     if (selectedResponse?.id === id) setSelectedResponse(null)
   }
 
@@ -102,11 +100,9 @@ export function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-zinc-950 text-zinc-100 overflow-hidden">
-      {/* Stats bar */}
+    <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
       <StatsBar />
 
-      {/* Three-panel layout */}
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           activeBucket={activeBucket}
@@ -137,7 +133,6 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Compose drawer */}
       <ComposeDrawer
         open={composeOpen}
         response={selectedResponse}
@@ -145,7 +140,6 @@ export function Dashboard() {
         onSent={handleComposeSent}
       />
 
-      {/* Bulk action bar */}
       {selectedIds.length > 0 && (
         <BulkActionBar
           count={selectedIds.length}

@@ -46,26 +46,26 @@ export function StatsBar() {
     : null
 
   return (
-    <div className="border-b border-zinc-800 bg-zinc-950 px-6 py-3">
+    <div className="border-b border-zinc-200 bg-white px-6 py-3 dark:border-zinc-800 dark:bg-zinc-950">
       <div className="flex items-center gap-6 overflow-x-auto">
-        <div className="flex shrink-0 items-center gap-4 pr-6 border-r border-zinc-800">
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+        <div className="flex shrink-0 items-center gap-4 pr-6 border-r border-zinc-200 dark:border-zinc-800">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
             <TrendingUp className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-zinc-100 font-medium">
+            <span className="text-zinc-900 font-medium dark:text-zinc-100">
               {totalProcessed !== null ? totalProcessed.toLocaleString() : '—'}
             </span>
             <span>processed</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
             <Zap className="h-3.5 w-3.5 text-amber-400" />
-            <span className="text-zinc-100 font-medium">
+            <span className="text-zinc-900 font-medium dark:text-zinc-100">
               {stats ? stats.llm.actual_calls.toLocaleString() : '—'}
             </span>
             <span>LLM calls</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
             <DollarSign className="h-3.5 w-3.5 text-emerald-400" />
-            <span className="text-zinc-100 font-medium">
+            <span className="text-zinc-900 font-medium dark:text-zinc-100">
               {totalCost !== null ? `$${totalCost.toFixed(2)}` : '—'}
             </span>
             <span>cost</span>
@@ -78,7 +78,7 @@ export function StatsBar() {
           return (
             <div key={tag} className="flex shrink-0 items-center gap-2">
               <span className={cn('text-xs font-medium', config.color)}>{config.label}</span>
-              <span className="text-sm font-semibold text-zinc-100">
+              <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 {count !== null ? count.toLocaleString() : '—'}
               </span>
             </div>

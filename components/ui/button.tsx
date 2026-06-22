@@ -6,16 +6,16 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-600 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:pointer-events-none disabled:opacity-50 dark:focus-visible:ring-zinc-600',
   {
     variants: {
       variant: {
         default: 'bg-blue-600 text-white shadow hover:bg-blue-700',
-        destructive: 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20',
-        outline: 'border border-zinc-700 bg-transparent text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100',
-        secondary: 'bg-zinc-800 text-zinc-200 hover:bg-zinc-700',
-        ghost: 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100',
-        legal: 'bg-violet-500/10 text-violet-400 border border-violet-500/20 hover:bg-violet-500/20',
+        destructive: 'bg-red-500/10 text-red-600 border border-red-500/20 hover:bg-red-500/20 dark:text-red-400',
+        outline: 'border border-zinc-300 bg-transparent text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+        secondary: 'bg-zinc-100 text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
+        ghost: 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+        legal: 'bg-violet-500/10 text-violet-600 border border-violet-500/20 hover:bg-violet-500/20 dark:text-violet-400',
       },
       size: {
         default: 'h-9 px-4 py-2',
