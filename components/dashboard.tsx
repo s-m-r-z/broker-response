@@ -8,7 +8,6 @@ import { ResponseList } from './response-list'
 import { ResponseDetail } from './response-detail'
 import { ComposeDrawer } from './compose-drawer'
 import { BulkActionBar } from './bulk-action-bar'
-import { StatsBar } from './stats-bar'
 
 export function Dashboard() {
   const [responses, setResponses] = useState<BrokerResponse[]>([])
@@ -101,8 +100,6 @@ export function Dashboard() {
 
   return (
     <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
-      <StatsBar />
-
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           activeBucket={activeBucket}
