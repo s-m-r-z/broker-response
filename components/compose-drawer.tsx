@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Send, Loader2 } from 'lucide-react'
 import { type BrokerResponse } from '@/lib/types'
 import { EMAIL_TEMPLATES } from '@/lib/constants'
@@ -22,23 +22,26 @@ interface ComposeDrawerProps {
   onSent: () => void
 }
 
-export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawerProps) {
-  const template = response ? EMAIL_TEMPLATES[response.tag] : null
+function buildBody(response: BrokerResponse): string {
+  const template = EMAIL_TEMPLATES[response.tag]
+  return `Dear ${response.brokerName},\n\n${template.body}\n\nBest regards,\nPureWL Compliance Team`
+}
 
-  const [to, setTo] = useState(response?.brokerEmail ?? '')
-  const [subject, setSubject] = useState(template?.subject ?? '')
-  const [body, setBody] = useState(template?.body ?? '')
+export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawerProps) {
+  const [to, setTo] = useState('')
+  const [subject, setSubject] = useState('')
+  const [body, setBody] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Sync fields when response changes
-  useState(() => {
+  useEffect(() => {
     if (response) {
       setTo(response.brokerEmail)
       setSubject(EMAIL_TEMPLATES[response.tag].subject)
-      setBody(EMAIL_TEMPLATES[response.tag].body)
+      setBody(buildBody(response))
     }
-  })
+    setError(null)
+  }, [response])
 
   async function handleSend() {
     if (!response || !to || !subject || !body) return
@@ -74,17 +77,17 @@ export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawer
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">To</label>
+            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">To</label>
             <Input value={to} onChange={(e) => setTo(e.target.value)} placeholder="broker@example.com" />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Subject</label>
+            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Subject</label>
             <Input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Message</label>
+            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Message</label>
             <Textarea
               value={body}
               onChange={(e) => setBody(e.target.value)}
@@ -95,7 +98,7 @@ export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawer
           </div>
 
           {error && (
-            <p className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+            <p className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">
               {error}
             </p>
           )}
