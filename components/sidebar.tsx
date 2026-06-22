@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import {
   Inbox,
   CheckCircle2,
@@ -8,6 +9,7 @@ import {
   Clock,
   HelpCircle,
   Shield,
+  LogOut,
 } from 'lucide-react'
 import { type Bucket, type Tag } from '@/lib/types'
 import { TAG_CONFIG, BUCKET_TAGS } from '@/lib/constants'
@@ -39,6 +41,14 @@ const BUCKET_COLORS: Record<Bucket, string> = {
 }
 
 export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect }: SidebarProps) {
+  const router = useRouter()
+
+  async function handleLogout() {
+    await fetch('/api/auth', { method: 'DELETE' })
+    router.push('/login')
+    router.refresh()
+  }
+
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
       {/* Logo */}
@@ -76,6 +86,15 @@ export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect }
             </button>
           )
         })}
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="mt-4 flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300 transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </button>
 
         {/* Individual tags */}
         <p className="mb-1 mt-4 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
