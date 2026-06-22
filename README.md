@@ -12,10 +12,11 @@ An internal compliance dashboard for triaging data broker removal responses at s
 
 ## Tech Stack
 
-- **Frontend/Backend:** Next.js 14 (App Router)
+- **Frontend/Backend:** Next.js 16 (App Router)
 - **Database:** SQLite via Prisma
-- **Email:** Nodemailer + Gmail SMTP
+- **Email:** Nodemailer v9 + Gmail SMTP
 - **UI:** Tailwind CSS + shadcn/ui-style components, Inter font, Lucide icons
+- **Auth:** Cookie-based session login (password set via `AUTH_PASSWORD` env var)
 
 ## Tag Taxonomy
 
@@ -58,6 +59,8 @@ SMTP_PORT=587
 SMTP_USER=your-email@yourcompany.com
 SMTP_PASS=your-google-app-password   # Generate at myaccount.google.com/apppasswords
 SMTP_FROM=your-email@yourcompany.com
+
+AUTH_PASSWORD=your-dashboard-password  # Password for the /login page
 ```
 
 ### 3. Set up the database
@@ -102,12 +105,14 @@ Content-Type: application/json
 ```
 app/
   api/
+    auth/           → POST login / DELETE logout (cookie-based session)
     stats/          → Proxies live stats from email-classifier.purewl.com/stats
     responses/      → GET filtered/paginated responses
     responses/[id]/ → GET single response with action history
     ingest/         → POST new tagged response
     email/          → POST send email via Gmail SMTP
     actions/        → POST log an action (resolve, escalate, re-send)
+  login/            → Login page
 components/
   dashboard.tsx       → Main client component, manages all state
   sidebar.tsx         → Bucket + tag navigation
