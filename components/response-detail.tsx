@@ -9,6 +9,9 @@ import {
   Clock,
   Loader2,
   Inbox,
+  Globe,
+  MapPin,
+  Tag as TagIcon,
 } from 'lucide-react'
 import { type BrokerResponse, type ActionLog } from '@/lib/types'
 import { TagBadge } from './tag-badge'
@@ -64,7 +67,33 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-4 text-xs text-zinc-400 dark:text-zinc-600">
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+          {response.website && (
+            <a
+              href={response.website.startsWith('http') ? response.website : `https://${response.website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 hover:text-blue-500 transition-colors"
+            >
+              <Globe className="h-3 w-3" />
+              {response.website.replace(/^https?:\/\//, '')}
+            </a>
+          )}
+          {response.jurisdiction && (
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {response.jurisdiction}
+            </span>
+          )}
+          {response.category && (
+            <span className="flex items-center gap-1">
+              <TagIcon className="h-3 w-3" />
+              {response.category}
+            </span>
+          )}
+          {(response.website || response.jurisdiction || response.category) && (
+            <span className="text-zinc-300 dark:text-zinc-700">·</span>
+          )}
           {response.tier && (
             <span className="capitalize">{response.tier.replace('_', ' ')}</span>
           )}

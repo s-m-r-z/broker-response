@@ -3,6 +3,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { type BrokerResponse, type Bucket, type Tag } from '@/lib/types'
 import { BUCKET_TAGS } from '@/lib/constants'
+
+interface Counts {
+  byTag: Record<Tag, number>
+  byBucket: Record<Bucket, number>
+}
 import { Sidebar } from './sidebar'
 import { ResponseList } from './response-list'
 import { ResponseDetail } from './response-detail'
@@ -18,6 +23,12 @@ export function Dashboard() {
   const [selectedResponse, setSelectedResponse] = useState<BrokerResponse | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [composeOpen, setComposeOpen] = useState(false)
+  const [counts, setCounts] = useState<Counts | null>(null)
+
+  const fetchCounts = useCallback(async () => {
+    const res = await fetch('/api/counts')
+    if (res.ok) setCounts(await res.json())
+  }, [])
 
   const fetchResponses = useCallback(async () => {
     setLoading(true)
@@ -40,8 +51,12 @@ export function Dashboard() {
     fetchResponses()
   }, [fetchResponses])
 
+  useEffect(() => {
+    fetchCounts()
+  }, [fetchCounts])
+
   async function refreshSelected(id: string) {
-    await fetchResponses()
+    await Promise.all([fetchResponses(), fetchCounts()])
     const res = await fetch(`/api/responses/${id}`)
     if (res.ok) {
       const updated = await res.json()
@@ -91,7 +106,7 @@ export function Dashboard() {
       )
     )
     setSelectedIds([])
-    await fetchResponses()
+    await Promise.all([fetchResponses(), fetchCounts()])
   }
 
   function handleComposeSent() {
@@ -106,6 +121,7 @@ export function Dashboard() {
           activeTag={activeTag}
           onBucketSelect={setActiveBucket}
           onTagSelect={setActiveTag}
+          counts={counts}
         />
 
         <ResponseList

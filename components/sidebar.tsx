@@ -21,6 +21,7 @@ interface SidebarProps {
   activeTag: Tag | null
   onBucketSelect: (bucket: Bucket) => void
   onTagSelect: (tag: Tag | null) => void
+  counts: { byTag: Record<Tag, number>; byBucket: Record<Bucket, number> } | null
 }
 
 const BUCKETS: { id: Bucket; label: string; icon: React.ReactNode }[] = [
@@ -41,7 +42,7 @@ const BUCKET_COLORS: Record<Bucket, string> = {
   review: 'text-violet-400',
 }
 
-export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect }: SidebarProps) {
+export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect, counts }: SidebarProps) {
   const router = useRouter()
 
   async function handleLogout() {
@@ -86,7 +87,12 @@ export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect }
               )}
             >
               <span className={isActive ? color : ''}>{bucket.icon}</span>
-              {bucket.label}
+              <span className="flex-1 text-left">{bucket.label}</span>
+              {counts && (counts.byBucket[bucket.id] ?? 0) > 0 && (
+                <span className="text-[10px] font-medium tabular-nums text-zinc-400 dark:text-zinc-600">
+                  {counts.byBucket[bucket.id].toLocaleString()}
+                </span>
+              )}
             </button>
           )
         })}
@@ -118,7 +124,12 @@ export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect }
               )}
             >
               <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', config.bgColor, 'border', config.borderColor)} />
-              <span className={isActive ? config.color : ''}>{config.label}</span>
+              <span className={cn('flex-1 text-left', isActive ? config.color : '')}>{config.label}</span>
+              {counts && (counts.byTag[tag] ?? 0) > 0 && (
+                <span className="text-[10px] font-medium tabular-nums text-zinc-400 dark:text-zinc-600">
+                  {counts.byTag[tag].toLocaleString()}
+                </span>
+              )}
             </button>
           )
         })}

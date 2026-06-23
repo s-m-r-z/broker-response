@@ -124,6 +124,11 @@ export function ResponseList({
                     <span className="shrink-0 text-[10px] text-zinc-400 dark:text-zinc-600">{formatRelativeTime(r.createdAt)}</span>
                   </div>
                   <p className="mt-0.5 truncate text-xs text-zinc-500">{r.brokerEmail}</p>
+                  {(r.website || r.jurisdiction || r.category) && (
+                    <p className="mt-0.5 truncate text-[10px] text-zinc-400 dark:text-zinc-600">
+                      {[r.website, r.jurisdiction, r.category].filter(Boolean).join(' · ')}
+                    </p>
+                  )}
                   <div className="mt-1.5 flex flex-wrap items-center gap-1">
                     <TagBadge tag={r.tag} />
                     <StatusBadge status={r.status} />

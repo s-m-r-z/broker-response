@@ -50,6 +50,9 @@ export interface BrokerResponse {
   tier: Tier | null
   status: Status
   notes: string | null
+  website: string | null
+  jurisdiction: string | null
+  category: string | null
   createdAt: string
   updatedAt: string
   actions: ActionLog[]

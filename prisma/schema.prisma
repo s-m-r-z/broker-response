@@ -15,6 +15,9 @@ model BrokerResponse {
   tag             String
   tier            String?
   status          String      @default("OPEN")
+  website         String?
+  jurisdiction    String?
+  category        String?
   notes           String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
