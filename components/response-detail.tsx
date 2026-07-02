@@ -19,19 +19,13 @@ import { StatusBadge } from './status-badge'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { formatDate, formatRelativeTime } from '@/lib/utils'
+import { ACTION_LABELS } from '@/lib/constants'
+import { RelevantLawPanel } from './legal-workbook/relevant-law-panel'
 
 interface ResponseDetailProps {
   response: BrokerResponse | null
-  onCompose: () => void
+  onCompose: (insertText?: string) => void
   onStatusChange: (status: string) => Promise<void>
-}
-
-const ACTION_LABELS: Record<string, string> = {
-  EMAIL_SENT: 'Email sent',
-  ESCALATED_TO_LEGAL: 'Escalated to legal',
-  MARKED_RESOLVED: 'Marked resolved',
-  RE_SENT: 'Re-sent request',
-  NOTE_ADDED: 'Note added',
 }
 
 export function ResponseDetail({ response, onCompose, onStatusChange }: ResponseDetailProps) {
@@ -103,7 +97,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
       {/* Actions */}
       <div className="border-b border-zinc-200 px-6 py-3 flex flex-wrap items-center gap-2 dark:border-zinc-800">
-        <Button size="sm" onClick={onCompose}>
+        <Button size="sm" onClick={() => onCompose()}>
           <Mail className="h-3.5 w-3.5" />
           Email Broker
         </Button>
@@ -124,7 +118,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
         <Button
           size="sm"
-          variant="outline"
+          variant="warning"
           onClick={() => handle('RE_SENT')}
           disabled={!!loadingAction || response.status === 'RE_SENT'}
         >
@@ -138,10 +132,9 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 
         <Button
           size="sm"
-          variant="ghost"
+          variant="success"
           onClick={() => handle('RESOLVED')}
           disabled={!!loadingAction || response.status === 'RESOLVED'}
-          className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-500/10"
         >
           {loadingAction === 'RESOLVED' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -164,6 +157,8 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
             </p>
           </div>
         </div>
+
+        <RelevantLawPanel jurisdiction={response.jurisdiction} onInsertCitation={onCompose} />
 
         {response.actions.length > 0 && (
           <div>

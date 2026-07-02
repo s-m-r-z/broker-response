@@ -1,4 +1,28 @@
-import { type Tag, type Bucket, type Status } from './types'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, type LucideIcon } from 'lucide-react'
+import { type Tag, type Bucket, type Status, type ActionType } from './types'
+
+export const BUCKET_CONFIG: Record<Bucket, {
+  label: string
+  icon: LucideIcon
+  color: string
+  bgColor: string
+  borderColor: string
+}> = {
+  all: { label: 'All Responses', icon: Inbox, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
+  'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
+  denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
+  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
+  review: { label: 'Review', icon: HelpCircle, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
+}
+
+export const ACTION_LABELS: Record<ActionType, string> = {
+  EMAIL_SENT: 'Email sent',
+  ESCALATED_TO_LEGAL: 'Escalated to legal',
+  MARKED_RESOLVED: 'Marked resolved',
+  RE_SENT: 'Re-sent request',
+  NOTE_ADDED: 'Note added',
+}
 
 export const TAG_CONFIG: Record<Tag, {
   label: string
@@ -133,6 +157,17 @@ export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgCol
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
   },
+}
+
+export const CLAUSE_CATEGORY_LABELS: Record<string, string> = {
+  RIGHT_TO_ERASURE: 'Right to Erasure',
+  RESPONSE_DEADLINE: 'Response Deadline',
+  VERIFICATION_REQUIREMENTS: 'Verification Requirements',
+  EXEMPTIONS: 'Exemptions',
+  PENALTIES: 'Penalties',
+  ENFORCEMENT_AUTHORITY: 'Enforcement Authority',
+  DEFINITIONS: 'Definitions',
+  OTHER: 'Other',
 }
 
 export const EMAIL_TEMPLATES: Record<Tag, { subject: string; body: string }> = {

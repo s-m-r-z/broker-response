@@ -35,3 +35,54 @@ model ActionLog {
   note         String?
   createdAt    DateTime       @default(now())
 }
+
+// Legal workbook: reference library of data-protection law clauses per
+// jurisdiction, used by legal counsel to back replies to brokers with
+// citations. Content is produced by an LLM (see lib/legal-ai.ts) — the
+// aiGenerated/verified/lastCheckedAt fields exist so that placeholder data
+// seeded today and real model output wired in later share one shape.
+model LawRegime {
+  id            String      @id @default(cuid())
+  country       String
+  state         String?
+  name          String
+  description   String?
+  sourceModel   String?
+  aiGenerated   Boolean     @default(true)
+  lastCheckedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  clauses       LawClause[]
+}
+
+model LawClause {
+  id             String             @id @default(cuid())
+  regimeId       String
+  regime         LawRegime          @relation(fields: [regimeId], references: [id], onDelete: Cascade)
+  category       String
+  title          String
+  citation       String
+  text           String
+  sourceUrl      String?
+  verified       Boolean            @default(false)
+  aiGenerated    Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  pendingChanges PendingLawChange[]
+}
+
+// A proposed update to a clause, created by a recheck, sitting in front of
+// the clause until someone accepts or rejects it — the clause itself never
+// changes until that happens.
+model PendingLawChange {
+  id               String    @id @default(cuid())
+  clauseId         String
+  clause           LawClause @relation(fields: [clauseId], references: [id], onDelete: Cascade)
+  proposedTitle    String?
+  proposedCitation String?
+  proposedText     String
+  changeSummary    String
+  status           String    @default("PENDING")
+  createdAt        DateTime  @default(now())
+  reviewedAt       DateTime?
+}

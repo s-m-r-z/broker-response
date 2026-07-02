@@ -16,6 +16,8 @@ const buttonVariants = cva(
         secondary: 'bg-zinc-100 text-zinc-800 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700',
         ghost: 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
         legal: 'bg-violet-500/10 text-violet-600 border border-violet-500/20 hover:bg-violet-500/20 dark:text-violet-400',
+        success: 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20 dark:text-emerald-400',
+        warning: 'bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20 dark:text-amber-400',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -18,6 +18,7 @@ import { Textarea } from './ui/textarea'
 interface ComposeDrawerProps {
   open: boolean
   response: BrokerResponse | null
+  insertCitation: { text: string; nonce: number } | null
   onClose: () => void
   onSent: () => void
 }
@@ -27,7 +28,7 @@ function buildBody(response: BrokerResponse): string {
   return `Dear ${response.brokerName},\n\n${template.body}\n\nBest regards,\nPureWL Compliance Team`
 }
 
-export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawerProps) {
+export function ComposeDrawer({ open, response, insertCitation, onClose, onSent }: ComposeDrawerProps) {
   const [to, setTo] = useState('')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
@@ -42,6 +43,12 @@ export function ComposeDrawer({ open, response, onClose, onSent }: ComposeDrawer
     }
     setError(null)
   }, [response])
+
+  useEffect(() => {
+    if (insertCitation) {
+      setBody((prev) => `${prev}\n\n${insertCitation.text}`)
+    }
+  }, [insertCitation])
 
   async function handleSend() {
     if (!response || !to || !subject || !body) return

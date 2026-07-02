@@ -109,10 +109,7 @@ export function ResponseList({
               )}
             >
               <div className="flex items-start gap-2">
-                <div
-                  className="mt-0.5 shrink-0"
-                  onClick={(e) => { e.stopPropagation(); onToggleCheck(r.id) }}
-                >
+                <div className="mt-0.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                   <Checkbox
                     checked={selectedIds.includes(r.id)}
                     onCheckedChange={() => onToggleCheck(r.id)}

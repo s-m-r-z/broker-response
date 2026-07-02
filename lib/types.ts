@@ -41,6 +41,16 @@ export interface ActionLog {
   createdAt: string
 }
 
+export interface RecentActivityItem {
+  id: string
+  responseId: string
+  type: ActionType
+  emailSubject: string | null
+  note: string | null
+  createdAt: string
+  response: { id: string; brokerName: string; tag: Tag }
+}
+
 export interface BrokerResponse {
   id: string
   brokerName: string
@@ -76,4 +86,47 @@ export interface ResponsesApiResponse {
   total: number
   page: number
   pageSize: number
+}
+
+export type PendingChangeStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED'
+
+export interface PendingLawChange {
+  id: string
+  clauseId: string
+  proposedTitle: string | null
+  proposedCitation: string | null
+  proposedText: string
+  changeSummary: string
+  status: PendingChangeStatus
+  createdAt: string
+  reviewedAt: string | null
+}
+
+export interface LawClause {
+  id: string
+  regimeId: string
+  category: string
+  title: string
+  citation: string
+  text: string
+  sourceUrl: string | null
+  verified: boolean
+  aiGenerated: boolean
+  createdAt: string
+  updatedAt: string
+  pendingChanges: PendingLawChange[]
+}
+
+export interface LawRegime {
+  id: string
+  country: string
+  state: string | null
+  name: string
+  description: string | null
+  sourceModel: string | null
+  aiGenerated: boolean
+  lastCheckedAt: string | null
+  createdAt: string
+  updatedAt: string
+  clauses: LawClause[]
 }

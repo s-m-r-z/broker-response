@@ -20,17 +20,11 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
   }
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-5 py-3 shadow-2xl shadow-zinc-200/50 animate-fade-in dark:border-zinc-700 dark:bg-zinc-900 dark:shadow-black/50">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-5 py-3 shadow-2xl shadow-zinc-200/50 animate-fade-in dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-black/50">
       <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{count} selected</span>
       <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700" />
 
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => handle('RESOLVED')}
-        disabled={!!loading}
-        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:text-emerald-300 dark:hover:bg-emerald-500/10"
-      >
+      <Button size="sm" variant="success" onClick={() => handle('RESOLVED')} disabled={!!loading}>
         {loading === 'RESOLVED' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
@@ -39,13 +33,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
         Mark Resolved
       </Button>
 
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => handle('ESCALATED_TO_LEGAL')}
-        disabled={!!loading}
-        className="text-violet-600 hover:text-violet-700 hover:bg-violet-50 dark:text-violet-400 dark:hover:text-violet-300 dark:hover:bg-violet-500/10"
-      >
+      <Button size="sm" variant="legal" onClick={() => handle('ESCALATED_TO_LEGAL')} disabled={!!loading}>
         {loading === 'ESCALATED_TO_LEGAL' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
@@ -54,13 +42,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
         Escalate to Legal
       </Button>
 
-      <Button
-        size="sm"
-        variant="ghost"
-        onClick={() => handle('RE_SENT')}
-        disabled={!!loading}
-        className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-500/10"
-      >
+      <Button size="sm" variant="warning" onClick={() => handle('RE_SENT')} disabled={!!loading}>
         {loading === 'RE_SENT' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
