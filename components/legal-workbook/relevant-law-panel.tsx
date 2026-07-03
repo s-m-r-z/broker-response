@@ -36,7 +36,7 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
   return (
     <div>
       <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
-        <Scale className="h-3.5 w-3.5" />
+        <Scale className="h-3.5 w-3.5 text-zinc-900 dark:text-zinc-100" />
         Relevant Law
       </p>
       <div className="space-y-2">

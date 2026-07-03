@@ -9,12 +9,12 @@ export const BUCKET_CONFIG: Record<Bucket, {
   bgColor: string
   borderColor: string
 }> = {
-  all: { label: 'All Responses', icon: Inbox, color: 'text-blue-400', dotColor: 'bg-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  all: { label: 'All Responses', icon: Inbox, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
   done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', dotColor: 'bg-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
   'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', dotColor: 'bg-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
   denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', dotColor: 'bg-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
-  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-400', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
-  review: { label: 'Review', icon: HelpCircle, color: 'text-violet-400', dotColor: 'bg-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
+  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
+  review: { label: 'Review', icon: HelpCircle, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
 }
 
 export const ACTION_LABELS: Record<ActionType, string> = {
@@ -25,11 +25,13 @@ export const ACTION_LABELS: Record<ActionType, string> = {
   NOTE_ADDED: 'Note added',
 }
 
+// Monotone by design: this is a history log of what happened, not a current
+// status needing attention, so the icon glyph alone differentiates entries.
 export const ACTION_ICON_CONFIG: Record<ActionType, { icon: LucideIcon; color: string; bgColor: string }> = {
-  EMAIL_SENT: { icon: Mail, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
-  ESCALATED_TO_LEGAL: { icon: Scale, color: 'text-violet-400', bgColor: 'bg-violet-500/10' },
-  MARKED_RESOLVED: { icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
-  RE_SENT: { icon: Send, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
+  EMAIL_SENT: { icon: Mail, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+  ESCALATED_TO_LEGAL: { icon: Scale, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+  MARKED_RESOLVED: { icon: CheckCircle2, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+  RE_SENT: { icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
   NOTE_ADDED: { icon: StickyNote, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
 }
 

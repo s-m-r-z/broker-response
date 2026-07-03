@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Loader2, X } from 'lucide-react'
+import { Check, CircleCheck, Loader2, X } from 'lucide-react'
 import { type LawClause } from '@/lib/types'
-import { cn } from '@/lib/utils'
 import { ClauseCategoryBadge } from './clause-category-badge'
 import { Callout } from './callout'
 import { Button } from '../ui/button'
@@ -14,17 +13,17 @@ interface ClauseCardProps {
   onReviewChange: (changeId: string, action: 'accept' | 'reject') => Promise<void>
 }
 
+// Unverified is the default state for every new clause, so it stays plain
+// text rather than a colored pill — a loud badge repeated on every card would
+// just be noise. Verified is the state worth drawing the eye to.
 function VerifiedBadge({ verified }: { verified: boolean }) {
+  if (!verified) {
+    return <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500">AI-drafted · unverified</span>
+  }
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium',
-        verified
-          ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-          : 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-      )}
-    >
-      {verified ? 'Verified' : 'AI-Drafted · Unverified'}
+    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-500 dark:text-emerald-400">
+      <CircleCheck className="h-3 w-3" />
+      Verified
     </span>
   )
 }

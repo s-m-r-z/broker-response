@@ -53,7 +53,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
 
       <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700" />
 
-      <button onClick={onClear} className="text-zinc-400 hover:text-zinc-600 transition-colors dark:text-zinc-500 dark:hover:text-zinc-300">
+      <button onClick={onClear} className="text-zinc-900 opacity-70 hover:opacity-100 transition-opacity dark:text-zinc-100">
         <X className="h-4 w-4" />
       </button>
     </div>

@@ -10,9 +10,9 @@ interface NavRailProps {
 }
 
 const SECTIONS = [
-  { id: 'home' as const, label: 'Overview', href: '/', icon: Home, color: 'bg-zinc-700' },
-  { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Shield, color: 'bg-blue-600' },
-  { id: 'legal' as const, label: 'Legal Workbook', href: '/legal-workbook', icon: Scale, color: 'bg-violet-600' },
+  { id: 'home' as const, label: 'Overview', href: '/', icon: Home },
+  { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Shield },
+  { id: 'legal' as const, label: 'Legal Workbook', href: '/legal-workbook', icon: Scale },
 ]
 
 export function NavRail({ active }: NavRailProps) {
@@ -38,7 +38,7 @@ export function NavRail({ active }: NavRailProps) {
               className={cn(
                 'flex h-9 w-9 items-center justify-center rounded-md transition-colors',
                 isActive
-                  ? cn(section.color, 'text-white')
+                  ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
                   : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300'
               )}
             >

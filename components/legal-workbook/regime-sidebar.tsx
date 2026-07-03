@@ -58,7 +58,7 @@ export function RegimeSidebar({ regimes, selectedId, onSelect, onAddNew }: Regim
                     {regime.state && <span className="text-zinc-400"> · {regime.state}</span>}
                   </span>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-amber-500/20 px-1.5 text-[10px] font-medium text-amber-500">
+                    <span className="rounded-full bg-amber-500/10 px-1.5 text-[10px] font-medium text-amber-400">
                       {pendingCount}
                     </span>
                   )}

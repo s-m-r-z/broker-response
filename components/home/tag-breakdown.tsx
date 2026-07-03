@@ -2,7 +2,6 @@
 
 import { type Tag } from '@/lib/types'
 import { TAG_CONFIG } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 
 interface TagBreakdownProps {
   counts: Record<Tag, number>
@@ -32,10 +31,7 @@ export function TagBreakdown({ counts, onSelectTag }: TagBreakdownProps) {
         >
           <span className="w-32 shrink-0 truncate text-xs text-zinc-600 dark:text-zinc-400">{config.label}</span>
           <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-            <div
-              className={cn('h-full rounded-full', config.dotColor)}
-              style={{ width: `${(count / max) * 100}%` }}
-            />
+            <div className="h-full rounded-full bg-zinc-400 dark:bg-zinc-500" style={{ width: `${(count / max) * 100}%` }} />
           </div>
           <span className="w-6 shrink-0 text-right text-xs font-medium tabular-nums text-zinc-500 dark:text-zinc-400">
             {count}

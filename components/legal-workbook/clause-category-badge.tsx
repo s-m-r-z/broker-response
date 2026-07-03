@@ -5,7 +5,7 @@ export function ClauseCategoryBadge({ category, className }: { category: string;
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-400',
+        'inline-flex items-center rounded-md border border-zinc-500/20 bg-zinc-500/10 px-2 py-0.5 text-[11px] font-medium text-zinc-400',
         className
       )}
     >

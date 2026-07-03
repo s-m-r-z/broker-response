@@ -127,7 +127,7 @@ export function HomeOverview() {
               onClick={() => router.push('/legal-workbook')}
               className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
             >
-              <Globe2 className="h-3 w-3 text-violet-400" />
+              <Globe2 className="h-3 w-3 text-zinc-400" />
               Jurisdictions
               <span className="font-medium text-zinc-700 dark:text-zinc-300">{regimes.length}</span>
             </button>

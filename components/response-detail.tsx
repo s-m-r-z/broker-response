@@ -69,19 +69,19 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-blue-500 transition-colors"
             >
-              <Globe className="h-3 w-3" />
+              <Globe className="h-3.5 w-3.5 text-zinc-900 dark:text-zinc-100" />
               {response.website.replace(/^https?:\/\//, '')}
             </a>
           )}
           {response.jurisdiction && (
             <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3" />
+              <MapPin className="h-3.5 w-3.5 text-zinc-900 dark:text-zinc-100" />
               {response.jurisdiction}
             </span>
           )}
           {response.category && (
             <span className="flex items-center gap-1">
-              <TagIcon className="h-3 w-3" />
+              <TagIcon className="h-3.5 w-3.5 text-zinc-900 dark:text-zinc-100" />
               {response.category}
             </span>
           )}
@@ -180,7 +180,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
 function ActionItem({ action }: { action: ActionLog }) {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-400 dark:text-zinc-600" />
+      <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
       <div className="min-w-0">
         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
           {ACTION_LABELS[action.type] ?? action.type}
