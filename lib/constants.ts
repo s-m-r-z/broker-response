@@ -1,19 +1,20 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType } from './types'
 
 export const BUCKET_CONFIG: Record<Bucket, {
   label: string
   icon: LucideIcon
   color: string
+  dotColor: string
   bgColor: string
   borderColor: string
 }> = {
-  all: { label: 'All Responses', icon: Inbox, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
-  done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
-  'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
-  denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
-  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
-  review: { label: 'Review', icon: HelpCircle, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
+  all: { label: 'All Responses', icon: Inbox, color: 'text-blue-400', dotColor: 'bg-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', dotColor: 'bg-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
+  'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', dotColor: 'bg-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
+  denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', dotColor: 'bg-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
+  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-400', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
+  review: { label: 'Review', icon: HelpCircle, color: 'text-violet-400', dotColor: 'bg-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
 }
 
 export const ACTION_LABELS: Record<ActionType, string> = {
@@ -24,9 +25,18 @@ export const ACTION_LABELS: Record<ActionType, string> = {
   NOTE_ADDED: 'Note added',
 }
 
+export const ACTION_ICON_CONFIG: Record<ActionType, { icon: LucideIcon; color: string; bgColor: string }> = {
+  EMAIL_SENT: { icon: Mail, color: 'text-blue-400', bgColor: 'bg-blue-500/10' },
+  ESCALATED_TO_LEGAL: { icon: Scale, color: 'text-violet-400', bgColor: 'bg-violet-500/10' },
+  MARKED_RESOLVED: { icon: CheckCircle2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10' },
+  RE_SENT: { icon: Send, color: 'text-amber-400', bgColor: 'bg-amber-500/10' },
+  NOTE_ADDED: { icon: StickyNote, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+}
+
 export const TAG_CONFIG: Record<Tag, {
   label: string
   color: string
+  dotColor: string
   bgColor: string
   borderColor: string
   bucket: Bucket
@@ -34,6 +44,7 @@ export const TAG_CONFIG: Record<Tag, {
   CONFIRMED_REMOVAL: {
     label: 'Confirmed Removal',
     color: 'text-emerald-400',
+    dotColor: 'bg-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
     bucket: 'done',
@@ -41,6 +52,7 @@ export const TAG_CONFIG: Record<Tag, {
   CONFIRMED_NOT_FOUND: {
     label: 'Confirmed Not Found',
     color: 'text-emerald-400',
+    dotColor: 'bg-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
     bucket: 'done',
@@ -48,6 +60,7 @@ export const TAG_CONFIG: Record<Tag, {
   NEEDS_MORE_INFO: {
     label: 'Needs More Info',
     color: 'text-amber-400',
+    dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
     bucket: 'needs-action',
@@ -55,6 +68,7 @@ export const TAG_CONFIG: Record<Tag, {
   NEEDS_CONFIRMATION: {
     label: 'Needs Confirmation',
     color: 'text-amber-400',
+    dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
     bucket: 'needs-action',
@@ -62,6 +76,7 @@ export const TAG_CONFIG: Record<Tag, {
   FORM_REQUIRED: {
     label: 'Form Required',
     color: 'text-amber-400',
+    dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
     bucket: 'needs-action',
@@ -69,6 +84,7 @@ export const TAG_CONFIG: Record<Tag, {
   DENIED_JURISDICTION: {
     label: 'Denied: Jurisdiction',
     color: 'text-red-400',
+    dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
     bucket: 'denied',
@@ -76,6 +92,7 @@ export const TAG_CONFIG: Record<Tag, {
   DENIED_FRAUD: {
     label: 'Denied: Fraud',
     color: 'text-red-400',
+    dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
     bucket: 'denied',
@@ -83,6 +100,7 @@ export const TAG_CONFIG: Record<Tag, {
   DENIED_OTHER: {
     label: 'Denied: Other',
     color: 'text-red-400',
+    dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
     bucket: 'denied',
@@ -90,6 +108,7 @@ export const TAG_CONFIG: Record<Tag, {
   OUT_OF_OFFICE: {
     label: 'Out of Office',
     color: 'text-zinc-400',
+    dotColor: 'bg-zinc-400',
     bgColor: 'bg-zinc-800',
     borderColor: 'border-zinc-700',
     bucket: 'no-action',
@@ -97,6 +116,7 @@ export const TAG_CONFIG: Record<Tag, {
   UNDELIVERABLE: {
     label: 'Undeliverable',
     color: 'text-red-400',
+    dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
     bucket: 'denied',
@@ -104,6 +124,7 @@ export const TAG_CONFIG: Record<Tag, {
   SPAM_OR_IRRELEVANT: {
     label: 'Spam / Irrelevant',
     color: 'text-zinc-400',
+    dotColor: 'bg-zinc-400',
     bgColor: 'bg-zinc-800',
     borderColor: 'border-zinc-700',
     bucket: 'no-action',
@@ -111,6 +132,7 @@ export const TAG_CONFIG: Record<Tag, {
   AMBIGUOUS: {
     label: 'Ambiguous',
     color: 'text-violet-400',
+    dotColor: 'bg-violet-400',
     bgColor: 'bg-violet-500/10',
     borderColor: 'border-violet-500/20',
     bucket: 'review',

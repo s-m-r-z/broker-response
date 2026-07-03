@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type BrokerResponse, type Bucket, type Tag } from '@/lib/types'
-import { BUCKET_TAGS, BUCKET_CONFIG } from '@/lib/constants'
+import { BUCKET_TAGS, BUCKET_CONFIG, TAG_CONFIG } from '@/lib/constants'
 
 interface Counts {
   byTag: Record<Tag, number>
@@ -60,10 +60,18 @@ export function Dashboard() {
   }, [fetchCounts])
 
   // One-time deep-link support from the Home overview: ?bucket= preselects a bucket,
-  // ?open= fetches and opens a specific response (e.g. from the recent activity feed).
+  // ?tag= preselects a tag, ?open= fetches and opens a specific response (e.g. from
+  // the recent activity feed).
   useEffect(() => {
     const bucket = searchParams.get('bucket')
     if (bucket && bucket in BUCKET_CONFIG) setActiveBucket(bucket as Bucket)
+
+    const tag = searchParams.get('tag')
+    if (tag && tag in TAG_CONFIG) {
+      const typedTag = tag as Tag
+      setActiveTag(typedTag)
+      setActiveBucket(TAG_CONFIG[typedTag].bucket)
+    }
 
     const openId = searchParams.get('open')
     if (openId) {
