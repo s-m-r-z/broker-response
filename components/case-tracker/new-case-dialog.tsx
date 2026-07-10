@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Loader2, Plus } from 'lucide-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog'
 import { Button } from '../ui/button'
@@ -11,9 +11,11 @@ interface NewCaseDialogProps {
   open: boolean
   onClose: () => void
   onCreated: (kase: Case) => void
+  initialBrokerName?: string
+  initialBrokerCountry?: string
 }
 
-export function NewCaseDialog({ open, onClose, onCreated }: NewCaseDialogProps) {
+export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, initialBrokerCountry }: NewCaseDialogProps) {
   const [userCountry, setUserCountry] = useState('')
   const [userState, setUserState] = useState('')
   const [brokerName, setBrokerName] = useState('')
@@ -21,6 +23,15 @@ export function NewCaseDialog({ open, onClose, onCreated }: NewCaseDialogProps) 
   const [removalRequestDate, setRemovalRequestDate] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Re-applies whenever the dialog opens, e.g. with a different response's
+  // broker prefilled from the dashboard's "Track as Case" action.
+  useEffect(() => {
+    if (open) {
+      setBrokerName(initialBrokerName ?? '')
+      setBrokerCountry(initialBrokerCountry ?? '')
+    }
+  }, [open, initialBrokerName, initialBrokerCountry])
 
   const canSubmit = userCountry && brokerName && brokerCountry && removalRequestDate
 

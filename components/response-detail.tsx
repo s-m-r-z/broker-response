@@ -12,6 +12,7 @@ import {
   Globe,
   MapPin,
   Tag as TagIcon,
+  Gavel,
 } from 'lucide-react'
 import { type BrokerResponse, type ActionLog } from '@/lib/types'
 import { TagBadge } from './tag-badge'
@@ -26,9 +27,10 @@ interface ResponseDetailProps {
   response: BrokerResponse | null
   onCompose: (insertText?: string) => void
   onStatusChange: (status: string) => Promise<void>
+  onTrackCase: () => void
 }
 
-export function ResponseDetail({ response, onCompose, onStatusChange }: ResponseDetailProps) {
+export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase }: ResponseDetailProps) {
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
   async function handle(action: string) {
@@ -142,6 +144,11 @@ export function ResponseDetail({ response, onCompose, onStatusChange }: Response
             <CheckCircle2 className="h-3.5 w-3.5" />
           )}
           Mark Resolved
+        </Button>
+
+        <Button size="sm" variant="outline" onClick={onTrackCase} title="Open the case tracker to escalate this non-response">
+          <Gavel className="h-3.5 w-3.5" />
+          Track as Case
         </Button>
       </div>
 

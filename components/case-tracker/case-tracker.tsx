@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { type Case } from '@/lib/types'
 import { NavRail } from '../nav-rail'
 import { CaseList } from './case-list'
@@ -8,6 +9,7 @@ import { CaseDetail } from './case-detail'
 import { NewCaseDialog } from './new-case-dialog'
 
 export function CaseTracker() {
+  const searchParams = useSearchParams()
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -23,6 +25,22 @@ export function CaseTracker() {
   useEffect(() => {
     fetchCases()
   }, [fetchCases])
+
+  // One-time deep-link support, e.g. from the dashboard's "Track as Case"
+  // action: ?open= fetches and selects a specific case directly, independent
+  // of whether the list fetch above has resolved yet.
+  useEffect(() => {
+    const openId = searchParams.get('open')
+    if (openId) {
+      fetch(`/api/cases/${openId}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: Case | null) => {
+          if (!data) return
+          setCases((prev) => (prev.some((c) => c.id === data.id) ? prev : [data, ...prev]))
+          setSelectedId(data.id)
+        })
+    }
+  }, [])
 
   const selected = cases.find((c) => c.id === selectedId) ?? null
 

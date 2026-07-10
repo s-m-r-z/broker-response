@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { type BrokerResponse, type Bucket, type Tag } from '@/lib/types'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { type BrokerResponse, type Bucket, type Tag, type Case } from '@/lib/types'
 import { BUCKET_TAGS, BUCKET_CONFIG, TAG_CONFIG } from '@/lib/constants'
 
 interface Counts {
@@ -15,9 +15,11 @@ import { ResponseList } from './response-list'
 import { ResponseDetail } from './response-detail'
 import { ComposeDrawer } from './compose-drawer'
 import { BulkActionBar } from './bulk-action-bar'
+import { NewCaseDialog } from './case-tracker/new-case-dialog'
 
 export function Dashboard() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [responses, setResponses] = useState<BrokerResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [activeBucket, setActiveBucket] = useState<Bucket>('all')
@@ -26,6 +28,7 @@ export function Dashboard() {
   const [selectedResponse, setSelectedResponse] = useState<BrokerResponse | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [composeOpen, setComposeOpen] = useState(false)
+  const [trackCaseOpen, setTrackCaseOpen] = useState(false)
   const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
   const [counts, setCounts] = useState<Counts | null>(null)
 
@@ -144,6 +147,11 @@ export function Dashboard() {
     setComposeOpen(true)
   }
 
+  function handleCaseCreated(kase: Case) {
+    setTrackCaseOpen(false)
+    router.push(`/case-tracker?open=${kase.id}`)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
       <div className="flex flex-1 overflow-hidden">
@@ -175,6 +183,7 @@ export function Dashboard() {
           response={selectedResponse}
           onCompose={handleCompose}
           onStatusChange={handleStatusChange}
+          onTrackCase={() => setTrackCaseOpen(true)}
         />
       </div>
 
@@ -184,6 +193,14 @@ export function Dashboard() {
         insertCitation={insertCitation}
         onClose={() => setComposeOpen(false)}
         onSent={handleComposeSent}
+      />
+
+      <NewCaseDialog
+        open={trackCaseOpen}
+        onClose={() => setTrackCaseOpen(false)}
+        onCreated={handleCaseCreated}
+        initialBrokerName={selectedResponse?.brokerName}
+        initialBrokerCountry={selectedResponse?.jurisdiction ?? undefined}
       />
 
       {selectedIds.length > 0 && (

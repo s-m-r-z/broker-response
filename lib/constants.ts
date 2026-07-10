@@ -204,6 +204,27 @@ export const REGIME_LABELS: Record<RegimeCode, string> = {
   LGPD: 'LGPD',
 }
 
+// Home-overview donut charts only. Hex pairs (not Tailwind classes) from the
+// dataviz skill's validated categorical palette, in the specific order run
+// through scripts/validate_palette.js for this feature (see PR notes) — the
+// order is the CVD-safety mechanism, so don't reorder without re-validating.
+export const BUCKET_DONUT_COLORS: Record<Exclude<Bucket, 'all'>, { light: string; dark: string }> = {
+  done: { light: '#008300', dark: '#008300' },
+  'needs-action': { light: '#eda100', dark: '#c98500' },
+  denied: { light: '#e34948', dark: '#e66767' },
+  'no-action': { light: '#2a78d6', dark: '#3987e5' },
+  review: { light: '#1baf7a', dark: '#199e70' },
+}
+
+export const STAGE_DONUT_COLORS: Record<EnforcementStage, { light: string; dark: string }> = {
+  request_sent: { light: '#2a78d6', dark: '#3987e5' },
+  followup_sent: { light: '#1baf7a', dark: '#199e70' },
+  deadline_approaching: { light: '#eda100', dark: '#c98500' },
+  deadline_passed: { light: '#e34948', dark: '#e66767' },
+  complaint_eligible: { light: '#4a3aa7', dark: '#9085e9' },
+  complaint_filed: { light: '#008300', dark: '#008300' },
+}
+
 export const CLAUSE_CATEGORY_LABELS: Record<string, string> = {
   RIGHT_TO_ERASURE: 'Right to Erasure',
   RESPONSE_DEADLINE: 'Response Deadline',
