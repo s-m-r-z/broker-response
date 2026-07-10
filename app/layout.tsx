@@ -12,6 +12,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Broker Response | PureWL Compliance',
   description: 'Triage and action broker data removal responses',
+  openGraph: {
+    title: 'Broker Response | PureWL Compliance',
+    description: 'Triage and action broker data removal responses',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
