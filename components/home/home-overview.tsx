@@ -4,22 +4,15 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ShieldCheck, FileWarning, Globe2, Gavel, TriangleAlert } from 'lucide-react'
 import { type Bucket, type Tag, type LawRegime, type RecentActivityItem, type Case } from '@/lib/types'
-import {
-  BUCKET_CONFIG,
-  ACTION_LABELS,
-  ACTION_ICON_CONFIG,
-  BUCKET_DONUT_COLORS,
-  STAGE_DONUT_COLORS,
-  STAGE_CONFIG,
-} from '@/lib/constants'
-import { ENFORCEMENT_STAGES } from '@/lib/case-tracker'
+import { BUCKET_CONFIG, ACTION_LABELS, ACTION_ICON_CONFIG } from '@/lib/constants'
+import { type EnforcementStage } from '@/lib/case-tracker'
 import { cn } from '@/lib/utils'
 import { formatRelativeTime } from '@/lib/utils'
 import { NavRail } from '../nav-rail'
 import { StatCard } from './stat-card'
 import { ProgressStatCard } from './progress-stat-card'
 import { TagBreakdown } from './tag-breakdown'
-import { DonutChart } from './donut-chart'
+import { StageBreakdown } from './stage-breakdown'
 
 interface Counts {
   byTag: Record<Tag, number>
@@ -56,30 +49,10 @@ export function HomeOverview() {
   ).length
   const confirmedCases = cases.filter((c) => c.jurisdictionConfirmedAt && c.authorityConfirmedAt).length
 
-  const bucketDonutSegments = (Object.keys(BUCKET_DONUT_COLORS) as Exclude<Bucket, 'all'>[]).map((bucket) => ({
-    key: bucket,
-    label: BUCKET_CONFIG[bucket].label,
-    value: counts?.byBucket[bucket] ?? 0,
-    ...BUCKET_DONUT_COLORS[bucket],
-  }))
-
-  // Ring order (not the pipeline's funnel order — that's shown on the case detail
-  // page's StagePipeline) is fixed to the sequence validated for adjacent-pair CVD
-  // separation; don't reorder without re-running scripts/validate_palette.js.
-  const stageDonutOrder: (typeof ENFORCEMENT_STAGES)[number][] = [
-    'request_sent',
-    'followup_sent',
-    'deadline_approaching',
-    'deadline_passed',
-    'complaint_eligible',
-    'complaint_filed',
-  ]
-  const stageDonutSegments = stageDonutOrder.map((stage) => ({
-    key: stage,
-    label: STAGE_CONFIG[stage].label,
-    value: cases.filter((c) => c.enforcementStage === stage).length,
-    ...STAGE_DONUT_COLORS[stage],
-  }))
+  const stageCounts = cases.reduce((acc, c) => {
+    acc[c.enforcementStage] = (acc[c.enforcementStage] ?? 0) + 1
+    return acc
+  }, {} as Record<EnforcementStage, number>)
 
   return (
     <div className="flex h-screen bg-white dark:bg-zinc-950">
@@ -246,20 +219,11 @@ export function HomeOverview() {
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
                 Tag Breakdown
               </h2>
-              <div className="space-y-4 rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-                <DonutChart
-                  segments={bucketDonutSegments}
-                  centerLabel="Responses"
-                  onSelect={(bucket) => router.push(`/responses?bucket=${bucket}`)}
-                />
-              </div>
               {counts && (
-                <div className="mt-3">
-                  <TagBreakdown
-                    counts={counts.byTag}
-                    onSelectTag={(tag) => router.push(`/responses?tag=${tag}`)}
-                  />
-                </div>
+                <TagBreakdown
+                  counts={counts.byTag}
+                  onSelectTag={(tag) => router.push(`/responses?tag=${tag}`)}
+                />
               )}
             </section>
 
@@ -267,13 +231,7 @@ export function HomeOverview() {
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
                 Case Stage Breakdown
               </h2>
-              <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-                <DonutChart
-                  segments={stageDonutSegments}
-                  centerLabel="Cases"
-                  onSelect={() => router.push('/case-tracker')}
-                />
-              </div>
+              <StageBreakdown counts={stageCounts} onSelectStage={() => router.push('/case-tracker')} />
             </section>
           </div>
         </div>
