@@ -1,5 +1,7 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType } from './types'
+import { type EnforcementStage } from './case-tracker'
+import { type RegimeCode } from './jurisdiction-map'
 
 export const BUCKET_CONFIG: Record<Bucket, {
   label: string
@@ -181,6 +183,25 @@ export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgCol
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
   },
+}
+
+export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: LucideIcon; color: string; bgColor: string; borderColor: string }> = {
+  request_sent: { label: 'Request Sent', icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
+  deadline_approaching: { label: 'Deadline Approaching', icon: Clock, color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
+  deadline_passed: { label: 'Deadline Passed', icon: TriangleAlert, color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
+  followup_sent: { label: 'Follow-up Sent', icon: RefreshCw, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
+  complaint_eligible: { label: 'Complaint Eligible', icon: ShieldCheck, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
+  complaint_filed: { label: 'Complaint Filed', icon: FileCheck2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
+}
+
+export const REGIME_LABELS: Record<RegimeCode, string> = {
+  GDPR: 'GDPR',
+  UK_GDPR: 'UK GDPR',
+  CCPA: 'CCPA',
+  VA_CDPA: 'VA CDPA',
+  CO_CPA: 'CO CPA',
+  CT_CTDPA: 'CT CTDPA',
+  LGPD: 'LGPD',
 }
 
 export const CLAUSE_CATEGORY_LABELS: Record<string, string> = {

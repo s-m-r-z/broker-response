@@ -86,3 +86,26 @@ model PendingLawChange {
   createdAt        DateTime  @default(now())
   reviewedAt       DateTime?
 }
+
+// A broker non-response enforcement case. applicableRegime/responseDeadlineDate/
+// filingAuthority/complaintUrl/maxFine are always derived from userCountry+userState
+// (never brokerCountry) via lib/jurisdiction-map.ts — see lib/case-tracker.ts for the
+// derivation and stage-transition rules that keep this record consistent.
+model Case {
+  id                    String    @id @default(cuid())
+  userCountry           String
+  userState             String?
+  brokerName            String
+  brokerCountry         String
+  removalRequestDate    DateTime
+  applicableRegime      String
+  responseDeadlineDate  DateTime
+  enforcementStage      String    @default("request_sent")
+  filingAuthority       String
+  complaintUrl          String
+  maxFine               String
+  jurisdictionConfirmedAt DateTime?
+  authorityConfirmedAt    DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}

@@ -1,17 +1,18 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Home, Shield, Scale, LogOut } from 'lucide-react'
+import { Home, Shield, Scale, Gavel, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './theme-toggle'
 
 interface NavRailProps {
-  active: 'home' | 'dashboard' | 'legal'
+  active: 'home' | 'dashboard' | 'legal' | 'cases'
 }
 
 const SECTIONS = [
   { id: 'home' as const, label: 'Overview', href: '/', icon: Home },
   { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Shield },
+  { id: 'cases' as const, label: 'Case Tracker', href: '/case-tracker', icon: Gavel },
   { id: 'legal' as const, label: 'Legal Workbook', href: '/legal-workbook', icon: Scale },
 ]
 

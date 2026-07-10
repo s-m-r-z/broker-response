@@ -1,3 +1,25 @@
+import { type EnforcementStage } from './case-tracker'
+import { type RegimeCode } from './jurisdiction-map'
+
+export interface Case {
+  id: string
+  userCountry: string
+  userState: string | null
+  brokerName: string
+  brokerCountry: string
+  removalRequestDate: string
+  applicableRegime: RegimeCode
+  responseDeadlineDate: string
+  enforcementStage: EnforcementStage
+  filingAuthority: string
+  complaintUrl: string
+  maxFine: string
+  jurisdictionConfirmedAt: string | null
+  authorityConfirmedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 export type Tag =
   | 'CONFIRMED_REMOVAL'
   | 'CONFIRMED_NOT_FOUND'
