@@ -87,25 +87,27 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
         <div className="px-6 py-4 space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">User country</label>
-              <Input value={userCountry} onChange={(e) => setUserCountry(e.target.value)} placeholder="e.g. Germany" />
+              <label htmlFor="new-case-user-country" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">User country</label>
+              <Input id="new-case-user-country" data-testid="new-case-user-country" value={userCountry} onChange={(e) => setUserCountry(e.target.value)} placeholder="e.g. Germany" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">User state (US only)</label>
-              <Input value={userState} onChange={(e) => setUserState(e.target.value)} placeholder="e.g. California" />
+              <label htmlFor="new-case-user-state" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">User state (US only)</label>
+              <Input id="new-case-user-state" data-testid="new-case-user-state" value={userState} onChange={(e) => setUserState(e.target.value)} placeholder="e.g. California" />
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Broker name</label>
-            <Input value={brokerName} onChange={(e) => setBrokerName(e.target.value)} placeholder="e.g. Acme Data Inc." />
+            <label htmlFor="new-case-broker-name" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Broker name</label>
+            <Input id="new-case-broker-name" data-testid="new-case-broker-name" value={brokerName} onChange={(e) => setBrokerName(e.target.value)} placeholder="e.g. Acme Data Inc." />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Broker country</label>
-            <Input value={brokerCountry} onChange={(e) => setBrokerCountry(e.target.value)} placeholder="e.g. United States" />
+            <label htmlFor="new-case-broker-country" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Broker country</label>
+            <Input id="new-case-broker-country" data-testid="new-case-broker-country" value={brokerCountry} onChange={(e) => setBrokerCountry(e.target.value)} placeholder="e.g. United States" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Removal request date</label>
+            <label htmlFor="new-case-removal-request-date" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Removal request date</label>
             <Input
+              id="new-case-removal-request-date"
+              data-testid="new-case-removal-request-date"
               type="date"
               value={removalRequestDate}
               onChange={(e) => setRemovalRequestDate(e.target.value)}
@@ -113,17 +115,17 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
           </div>
 
           {error && (
-            <p className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">
+            <p data-testid="new-case-error" className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={saving}>
+          <Button variant="ghost" size="sm" onClick={onClose} disabled={saving} data-testid="new-case-cancel">
             Cancel
           </Button>
-          <Button size="sm" onClick={handleCreate} disabled={saving || !canSubmit}>
+          <Button size="sm" onClick={handleCreate} disabled={saving || !canSubmit} data-testid="new-case-submit">
             {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
             Create Case
           </Button>

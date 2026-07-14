@@ -24,7 +24,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
       <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{count} selected</span>
       <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700" />
 
-      <Button size="sm" variant="success" onClick={() => handle('RESOLVED')} disabled={!!loading}>
+      <Button size="sm" variant="success" onClick={() => handle('RESOLVED')} disabled={!!loading} data-testid="bulk-action-resolve">
         {loading === 'RESOLVED' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
@@ -33,7 +33,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
         Mark Resolved
       </Button>
 
-      <Button size="sm" variant="legal" onClick={() => handle('ESCALATED_TO_LEGAL')} disabled={!!loading}>
+      <Button size="sm" variant="legal" onClick={() => handle('ESCALATED_TO_LEGAL')} disabled={!!loading} data-testid="bulk-action-escalate">
         {loading === 'ESCALATED_TO_LEGAL' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
@@ -42,7 +42,7 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
         Escalate to Legal
       </Button>
 
-      <Button size="sm" variant="warning" onClick={() => handle('RE_SENT')} disabled={!!loading}>
+      <Button size="sm" variant="warning" onClick={() => handle('RE_SENT')} disabled={!!loading} data-testid="bulk-action-resend">
         {loading === 'RE_SENT' ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
@@ -53,7 +53,12 @@ export function BulkActionBar({ count, onClear, onBulkAction }: BulkActionBarPro
 
       <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700" />
 
-      <button onClick={onClear} className="text-zinc-900 opacity-70 hover:opacity-100 transition-opacity dark:text-zinc-100">
+      <button
+        onClick={onClear}
+        aria-label="Clear selection"
+        data-testid="bulk-action-clear"
+        className="text-zinc-900 opacity-70 hover:opacity-100 transition-opacity dark:text-zinc-100"
+      >
         <X className="h-4 w-4" />
       </button>
     </div>

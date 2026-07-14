@@ -46,6 +46,8 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
             <div key={regime.id} className="rounded-lg border border-zinc-200 dark:border-zinc-800">
               <button
                 onClick={() => setExpandedId(isOpen ? null : regime.id)}
+                data-testid={`relevant-law-toggle-${regime.id}`}
+                aria-expanded={isOpen}
                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300"
               >
                 {isOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
@@ -70,6 +72,7 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
                           size="sm"
                           variant="outline"
                           onClick={() => onInsertCitation(`Per ${clause.citation}: ${clause.text}`)}
+                          data-testid={`relevant-law-insert-${clause.id}`}
                         >
                           Insert
                         </Button>

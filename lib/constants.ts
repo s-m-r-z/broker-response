@@ -10,13 +10,14 @@ export const BUCKET_CONFIG: Record<Bucket, {
   dotColor: string
   bgColor: string
   borderColor: string
+  description: string
 }> = {
-  all: { label: 'All Responses', icon: Inbox, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
-  done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', dotColor: 'bg-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
-  'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', dotColor: 'bg-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
-  denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', dotColor: 'bg-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
-  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
-  review: { label: 'Review', icon: HelpCircle, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
+  all: { label: 'All Responses', icon: Inbox, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20', description: 'Every broker response in the system, across all statuses.' },
+  done: { label: 'Done', icon: CheckCircle2, color: 'text-emerald-400', dotColor: 'bg-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', description: 'Broker confirmed the data was removed, or confirmed no matching record existed.' },
+  'needs-action': { label: 'Needs Action', icon: AlertCircle, color: 'text-amber-400', dotColor: 'bg-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20', description: 'Broker needs more information, confirmation, or a form submission before removal can proceed.' },
+  denied: { label: 'Denied', icon: XCircle, color: 'text-red-400', dotColor: 'bg-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20', description: 'Broker refused the removal request — due to jurisdiction, fraud suspicion, or another stated reason.' },
+  'no-action': { label: 'No Action', icon: Clock, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20', description: 'Out-of-office replies or spam/irrelevant messages that don’t require a follow-up.' },
+  review: { label: 'Review', icon: HelpCircle, color: 'text-zinc-900 dark:text-zinc-100', dotColor: 'bg-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20', description: 'Ambiguous responses that need a human to read and decide the next step.' },
 }
 
 export const ACTION_LABELS: Record<ActionType, string> = {
@@ -43,7 +44,9 @@ export const TAG_CONFIG: Record<Tag, {
   dotColor: string
   bgColor: string
   borderColor: string
+  barColor: string
   bucket: Bucket
+  description: string
 }> = {
   CONFIRMED_REMOVAL: {
     label: 'Confirmed Removal',
@@ -51,7 +54,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
+    barColor: 'bg-emerald-500/45',
     bucket: 'done',
+    description: 'Broker confirmed the requested data has been removed.',
   },
   CONFIRMED_NOT_FOUND: {
     label: 'Confirmed Not Found',
@@ -59,7 +64,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
+    barColor: 'bg-emerald-500/45',
     bucket: 'done',
+    description: 'Broker confirmed no matching record exists in their system.',
   },
   NEEDS_MORE_INFO: {
     label: 'Needs More Info',
@@ -67,7 +74,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
+    barColor: 'bg-amber-500/45',
     bucket: 'needs-action',
+    description: 'Broker is asking for additional details before they can process the removal.',
   },
   NEEDS_CONFIRMATION: {
     label: 'Needs Confirmation',
@@ -75,7 +84,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
+    barColor: 'bg-amber-500/45',
     bucket: 'needs-action',
+    description: 'Broker wants us to confirm this is a legitimate request before acting on it.',
   },
   FORM_REQUIRED: {
     label: 'Form Required',
@@ -83,7 +94,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
+    barColor: 'bg-amber-500/45',
     bucket: 'needs-action',
+    description: 'Broker requires the removal to be submitted through their own form or portal.',
   },
   DENIED_JURISDICTION: {
     label: 'Denied: Jurisdiction',
@@ -91,7 +104,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
+    barColor: 'bg-red-500/45',
     bucket: 'denied',
+    description: 'Broker refused, claiming the request falls outside their jurisdiction.',
   },
   DENIED_FRAUD: {
     label: 'Denied: Fraud',
@@ -99,7 +114,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
+    barColor: 'bg-red-500/45',
     bucket: 'denied',
+    description: 'Broker refused, flagging the request as potentially fraudulent.',
   },
   DENIED_OTHER: {
     label: 'Denied: Other',
@@ -107,7 +124,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
+    barColor: 'bg-red-500/45',
     bucket: 'denied',
+    description: 'Broker refused for a reason other than jurisdiction or fraud.',
   },
   OUT_OF_OFFICE: {
     label: 'Out of Office',
@@ -115,7 +134,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-zinc-400',
     bgColor: 'bg-zinc-800',
     borderColor: 'border-zinc-700',
+    barColor: 'bg-zinc-500/45',
     bucket: 'no-action',
+    description: 'Automatic out-of-office reply — no action needed until the broker returns.',
   },
   UNDELIVERABLE: {
     label: 'Undeliverable',
@@ -123,7 +144,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-red-400',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/20',
+    barColor: 'bg-red-500/45',
     bucket: 'denied',
+    description: 'The email bounced — the address needs correcting before re-sending.',
   },
   SPAM_OR_IRRELEVANT: {
     label: 'Spam / Irrelevant',
@@ -131,7 +154,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-zinc-400',
     bgColor: 'bg-zinc-800',
     borderColor: 'border-zinc-700',
+    barColor: 'bg-zinc-500/45',
     bucket: 'no-action',
+    description: 'Response isn’t related to the removal request and can be ignored.',
   },
   AMBIGUOUS: {
     label: 'Ambiguous',
@@ -139,7 +164,9 @@ export const TAG_CONFIG: Record<Tag, {
     dotColor: 'bg-violet-400',
     bgColor: 'bg-violet-500/10',
     borderColor: 'border-violet-500/20',
+    barColor: 'bg-violet-500/45',
     bucket: 'review',
+    description: 'Response is unclear and needs a human to read it and decide the next step.',
   },
 }
 
@@ -152,46 +179,51 @@ export const BUCKET_TAGS: Record<Bucket, Tag[]> = {
   review: ['AMBIGUOUS'],
 }
 
-export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgColor: string; borderColor: string }> = {
+export const STATUS_CONFIG: Record<Status, { label: string; color: string; bgColor: string; borderColor: string; description: string }> = {
   OPEN: {
     label: 'Open',
     color: 'text-zinc-400',
     bgColor: 'bg-zinc-800',
     borderColor: 'border-zinc-700',
+    description: 'No action has been taken on this response yet.',
   },
   IN_PROGRESS: {
     label: 'In Progress',
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/20',
+    description: 'Someone is actively working this response.',
   },
   ESCALATED_TO_LEGAL: {
     label: 'Legal',
     color: 'text-violet-400',
     bgColor: 'bg-violet-500/10',
     borderColor: 'border-violet-500/20',
+    description: 'Handed off to legal counsel for review.',
   },
   RESOLVED: {
     label: 'Resolved',
     color: 'text-emerald-400',
     bgColor: 'bg-emerald-500/10',
     borderColor: 'border-emerald-500/20',
+    description: 'This response has been fully actioned and closed out.',
   },
   RE_SENT: {
     label: 'Re-sent',
     color: 'text-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/20',
+    description: 'The removal request was re-sent to the broker.',
   },
 }
 
-export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: LucideIcon; color: string; bgColor: string; borderColor: string }> = {
-  request_sent: { label: 'Request Sent', icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20' },
-  deadline_approaching: { label: 'Deadline Approaching', icon: Clock, color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20' },
-  deadline_passed: { label: 'Deadline Passed', icon: TriangleAlert, color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20' },
-  followup_sent: { label: 'Follow-up Sent', icon: RefreshCw, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20' },
-  complaint_eligible: { label: 'Complaint Eligible', icon: ShieldCheck, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20' },
-  complaint_filed: { label: 'Complaint Filed', icon: FileCheck2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20' },
+export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: LucideIcon; color: string; bgColor: string; borderColor: string; barColor: string; description: string }> = {
+  request_sent: { label: 'Request Sent', icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10', borderColor: 'border-zinc-500/20', barColor: 'bg-zinc-500/45', description: 'The initial data removal request was sent to the broker.' },
+  deadline_approaching: { label: 'Deadline Approaching', icon: Clock, color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20', barColor: 'bg-amber-500/45', description: 'The broker’s statutory response deadline is coming up.' },
+  deadline_passed: { label: 'Deadline Passed', icon: TriangleAlert, color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/20', barColor: 'bg-red-500/45', description: 'The broker missed their statutory response deadline without a valid response.' },
+  followup_sent: { label: 'Follow-up Sent', icon: RefreshCw, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20', barColor: 'bg-blue-500/45', description: 'A follow-up request was sent after the broker missed the deadline.' },
+  complaint_eligible: { label: 'Complaint Eligible', icon: ShieldCheck, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20', barColor: 'bg-violet-500/45', description: 'Jurisdiction has been confirmed, so a regulatory complaint can now be filed.' },
+  complaint_filed: { label: 'Complaint Filed', icon: FileCheck2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', barColor: 'bg-emerald-500/45', description: 'A complaint has been filed with the enforcement authority.' },
 }
 
 export const REGIME_LABELS: Record<RegimeCode, string> = {
@@ -204,6 +236,16 @@ export const REGIME_LABELS: Record<RegimeCode, string> = {
   LGPD: 'LGPD',
 }
 
+export const REGIME_DESCRIPTIONS: Record<RegimeCode, string> = {
+  GDPR: 'EU General Data Protection Regulation — applies when the user is in the European Union.',
+  UK_GDPR: 'UK GDPR — applies when the user is in the United Kingdom.',
+  CCPA: 'California Consumer Privacy Act (as amended by CPRA) — applies to California residents.',
+  VA_CDPA: 'Virginia Consumer Data Protection Act — applies to Virginia residents.',
+  CO_CPA: 'Colorado Privacy Act — applies to Colorado residents.',
+  CT_CTDPA: 'Connecticut Data Privacy Act — applies to Connecticut residents.',
+  LGPD: 'Lei Geral de Proteção de Dados — Brazil’s general data protection law.',
+}
+
 export const CLAUSE_CATEGORY_LABELS: Record<string, string> = {
   RIGHT_TO_ERASURE: 'Right to Erasure',
   RESPONSE_DEADLINE: 'Response Deadline',
@@ -213,6 +255,17 @@ export const CLAUSE_CATEGORY_LABELS: Record<string, string> = {
   ENFORCEMENT_AUTHORITY: 'Enforcement Authority',
   DEFINITIONS: 'Definitions',
   OTHER: 'Other',
+}
+
+export const CLAUSE_CATEGORY_DESCRIPTIONS: Record<string, string> = {
+  RIGHT_TO_ERASURE: 'The legal basis and scope for requesting deletion of personal data.',
+  RESPONSE_DEADLINE: 'How long the broker has to respond to a removal request under this law.',
+  VERIFICATION_REQUIREMENTS: 'What the broker is allowed to require to verify the requester’s identity.',
+  EXEMPTIONS: 'Cases where the broker is not required to comply with the removal request.',
+  PENALTIES: 'Fines or sanctions the broker faces for non-compliance.',
+  ENFORCEMENT_AUTHORITY: 'The regulator responsible for enforcing this law and receiving complaints.',
+  DEFINITIONS: 'Key terms as defined by this jurisdiction’s law.',
+  OTHER: 'Provisions that don’t fit the other categories.',
 }
 
 export const EMAIL_TEMPLATES: Record<Tag, { subject: string; body: string }> = {

@@ -99,7 +99,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
 
       {/* Actions */}
       <div className="border-b border-zinc-200 px-6 py-3 flex flex-wrap items-center gap-2 dark:border-zinc-800">
-        <Button size="sm" onClick={() => onCompose()}>
+        <Button size="sm" onClick={() => onCompose()} data-testid="response-action-email">
           <Mail className="h-3.5 w-3.5" />
           Email Broker
         </Button>
@@ -109,6 +109,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           variant="legal"
           onClick={() => handle('ESCALATED_TO_LEGAL')}
           disabled={!!loadingAction || response.status === 'ESCALATED_TO_LEGAL'}
+          data-testid="response-action-escalate"
         >
           {loadingAction === 'ESCALATED_TO_LEGAL' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -123,6 +124,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           variant="warning"
           onClick={() => handle('RE_SENT')}
           disabled={!!loadingAction || response.status === 'RE_SENT'}
+          data-testid="response-action-resend"
         >
           {loadingAction === 'RE_SENT' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -137,6 +139,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           variant="success"
           onClick={() => handle('RESOLVED')}
           disabled={!!loadingAction || response.status === 'RESOLVED'}
+          data-testid="response-action-resolve"
         >
           {loadingAction === 'RESOLVED' ? (
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -146,7 +149,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           Mark Resolved
         </Button>
 
-        <Button size="sm" variant="outline" onClick={onTrackCase} title="Open the case tracker to escalate this non-response">
+        <Button size="sm" variant="outline" onClick={onTrackCase} title="Open the case tracker to escalate this non-response" data-testid="response-action-track-case">
           <Gavel className="h-3.5 w-3.5" />
           Track as Case
         </Button>
@@ -186,7 +189,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
 
 function ActionItem({ action }: { action: ActionLog }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+    <div data-testid={`action-history-item-${action.id}`} className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
       <div className="min-w-0">
         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">

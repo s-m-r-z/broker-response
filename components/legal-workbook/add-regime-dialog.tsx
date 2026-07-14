@@ -60,30 +60,30 @@ export function AddRegimeDialog({ open, onClose, onCreated }: AddRegimeDialogPro
 
         <div className="px-6 py-4 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Country</label>
-            <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Australia" />
+            <label htmlFor="add-regime-country" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Country</label>
+            <Input id="add-regime-country" data-testid="add-regime-country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="e.g. Australia" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">State / Province (optional)</label>
-            <Input value={state} onChange={(e) => setState(e.target.value)} placeholder="e.g. New South Wales" />
+            <label htmlFor="add-regime-state" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">State / Province (optional)</label>
+            <Input id="add-regime-state" data-testid="add-regime-state" value={state} onChange={(e) => setState(e.target.value)} placeholder="e.g. New South Wales" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Regime name</label>
-            <Input value={regimeName} onChange={(e) => setRegimeName(e.target.value)} placeholder="e.g. Privacy Act 1988" />
+            <label htmlFor="add-regime-name" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Regime name</label>
+            <Input id="add-regime-name" data-testid="add-regime-name" value={regimeName} onChange={(e) => setRegimeName(e.target.value)} placeholder="e.g. Privacy Act 1988" />
           </div>
 
           {error && (
-            <p className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">
+            <p data-testid="add-regime-error" className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={saving}>
+          <Button variant="ghost" size="sm" onClick={onClose} disabled={saving} data-testid="add-regime-cancel">
             Cancel
           </Button>
-          <Button variant="legal" size="sm" onClick={handleCreate} disabled={saving || !country || !regimeName}>
+          <Button variant="legal" size="sm" onClick={handleCreate} disabled={saving || !country || !regimeName} data-testid="add-regime-submit">
             {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
             Generate
           </Button>

@@ -59,6 +59,8 @@ export function ResponseList({
             onClick={onRefresh}
             className="text-zinc-900 opacity-70 hover:opacity-100 transition-opacity dark:text-zinc-100"
             title="Refresh"
+            aria-label="Refresh"
+            data-testid="response-list-refresh"
           >
             <RefreshCw className={cn('h-3.5 w-3.5', loading && 'animate-spin')} />
           </button>
@@ -69,6 +71,8 @@ export function ResponseList({
             value={search}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Search broker, tag…"
+            aria-label="Search broker, tag"
+            data-testid="response-list-search"
             className="pl-8 h-8 text-xs"
           />
         </div>
@@ -81,6 +85,8 @@ export function ResponseList({
             checked={allChecked}
             data-state={someChecked ? 'indeterminate' : allChecked ? 'checked' : 'unchecked'}
             onCheckedChange={onToggleAll}
+            aria-label="Select all responses"
+            data-testid="response-list-select-all"
           />
           <span className="text-xs text-zinc-400 dark:text-zinc-500">
             {selectedIds.length > 0 ? `${selectedIds.length} selected` : 'Select all'}
@@ -103,6 +109,7 @@ export function ResponseList({
             <div
               key={r.id}
               onClick={() => onSelect(r)}
+              data-testid={`response-row-${r.id}`}
               className={cn(
                 'group flex cursor-pointer flex-col gap-1 border-b border-zinc-100 px-3 py-3 transition-colors hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-900',
                 selectedId === r.id && 'bg-zinc-50 border-l-2 border-l-blue-600 dark:bg-zinc-900'
@@ -113,6 +120,8 @@ export function ResponseList({
                   <Checkbox
                     checked={selectedIds.includes(r.id)}
                     onCheckedChange={() => onToggleCheck(r.id)}
+                    aria-label={`Select response from ${r.brokerName}`}
+                    data-testid={`response-row-${r.id}-checkbox`}
                   />
                 </div>
                 <div className="min-w-0 flex-1">

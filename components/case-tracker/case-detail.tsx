@@ -104,7 +104,7 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
                     Confirmed {formatRelativeTime(kase.jurisdictionConfirmedAt)}
                   </span>
                 ) : (
-                  <Button size="sm" variant="outline" disabled={!!confirming} onClick={handleConfirmJurisdiction}>
+                  <Button size="sm" variant="outline" disabled={!!confirming} onClick={handleConfirmJurisdiction} data-testid="confirm-jurisdiction-button">
                     {confirming === 'jurisdiction' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                     Confirm
                   </Button>
@@ -127,6 +127,7 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
                     disabled={!!confirming || !kase.jurisdictionConfirmedAt}
                     onClick={handleConfirmAuthority}
                     title={!kase.jurisdictionConfirmedAt ? 'Confirm jurisdiction first' : undefined}
+                    data-testid="confirm-authority-button"
                   >
                     {confirming === 'authority' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
                     Confirm

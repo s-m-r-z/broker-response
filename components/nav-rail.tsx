@@ -36,6 +36,8 @@ export function NavRail({ active }: NavRailProps) {
               key={section.id}
               onClick={() => router.push(section.href)}
               title={section.label}
+              aria-label={section.label}
+              data-testid={`nav-${section.id}`}
               className={cn(
                 'flex h-9 w-9 items-center justify-center rounded-md transition-colors',
                 isActive
@@ -54,6 +56,8 @@ export function NavRail({ active }: NavRailProps) {
         <button
           onClick={handleLogout}
           title="Sign out"
+          aria-label="Sign out"
+          data-testid="nav-logout"
           className="flex h-9 w-9 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300 transition-colors"
         >
           <LogOut className="h-4 w-4" />

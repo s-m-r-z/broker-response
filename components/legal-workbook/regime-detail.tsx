@@ -45,7 +45,7 @@ export function RegimeDetail({ regime, onRecheck, onToggleVerified, onReviewChan
               {regime.state ? `${regime.state}, ${regime.country}` : regime.country}
             </p>
           </div>
-          <Button size="sm" variant="outline" disabled={rechecking} onClick={handleRecheck}>
+          <Button size="sm" variant="outline" disabled={rechecking} onClick={handleRecheck} data-testid="regime-detail-recheck">
             {rechecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
             Check for Updates
           </Button>

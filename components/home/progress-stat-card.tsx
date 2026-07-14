@@ -2,6 +2,7 @@
 
 import { type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { InfoTooltip } from '../info-tooltip'
 
 interface ProgressStatCardProps {
   label: string
@@ -11,6 +12,8 @@ interface ProgressStatCardProps {
   color: string
   bgColor: string
   barColor: string
+  description?: string
+  testId?: string
   onClick?: () => void
 }
 
@@ -22,12 +25,15 @@ export function ProgressStatCard({
   color,
   bgColor,
   barColor,
+  description,
+  testId,
   onClick,
 }: ProgressStatCardProps) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0
-  return (
+  const card = (
     <button
       onClick={onClick}
+      data-testid={testId}
       className="flex h-full flex-col items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-4 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/60"
     >
       <div className={cn('flex h-9 w-9 items-center justify-center rounded-md', bgColor)}>
@@ -45,4 +51,5 @@ export function ProgressStatCard({
       </div>
     </button>
   )
+  return description ? <InfoTooltip content={description}>{card}</InfoTooltip> : card
 }

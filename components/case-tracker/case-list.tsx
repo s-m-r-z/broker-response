@@ -29,11 +29,13 @@ export function CaseList({ cases, loading, selectedId, onSelect, onNewCase, onRe
             onClick={onRefresh}
             className="text-zinc-900 opacity-70 hover:opacity-100 transition-opacity dark:text-zinc-100"
             title="Refresh"
+            aria-label="Refresh"
+            data-testid="case-list-refresh"
           >
             <RefreshCw className={cn('h-3.5 w-3.5', loading && 'animate-spin')} />
           </button>
         </div>
-        <Button size="sm" variant="outline" className="w-full" onClick={onNewCase}>
+        <Button size="sm" variant="outline" className="w-full" onClick={onNewCase} data-testid="case-list-new-case">
           <Plus className="h-3.5 w-3.5" />
           New Case
         </Button>
@@ -53,6 +55,7 @@ export function CaseList({ cases, loading, selectedId, onSelect, onNewCase, onRe
             <div
               key={c.id}
               onClick={() => onSelect(c.id)}
+              data-testid={`case-row-${c.id}`}
               className={cn(
                 'group flex cursor-pointer flex-col gap-1 border-b border-zinc-100 px-3 py-3 transition-colors hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-900',
                 selectedId === c.id && 'bg-zinc-50 border-l-2 border-l-blue-600 dark:bg-zinc-900'

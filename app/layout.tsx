@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import './globals.css'
 
 const inter = Inter({
@@ -22,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} dark`} suppressHydrationWarning>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

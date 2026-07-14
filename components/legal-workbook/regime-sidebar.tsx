@@ -27,7 +27,7 @@ export function RegimeSidebar({ regimes, selectedId, onSelect, onAddNew }: Regim
       </div>
 
       <div className="px-2 pt-3">
-        <Button size="sm" variant="outline" className="w-full" onClick={onAddNew}>
+        <Button size="sm" variant="outline" className="w-full" onClick={onAddNew} data-testid="regime-sidebar-add-jurisdiction">
           <Plus className="h-3.5 w-3.5" />
           Add Jurisdiction
         </Button>
@@ -46,6 +46,7 @@ export function RegimeSidebar({ regimes, selectedId, onSelect, onAddNew }: Regim
                 <button
                   key={regime.id}
                   onClick={() => onSelect(regime.id)}
+                  data-testid={`regime-sidebar-row-${regime.id}`}
                   className={cn(
                     'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors',
                     isActive

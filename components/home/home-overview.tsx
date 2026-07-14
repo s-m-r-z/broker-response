@@ -13,6 +13,7 @@ import { StatCard } from './stat-card'
 import { ProgressStatCard } from './progress-stat-card'
 import { TagBreakdown } from './tag-breakdown'
 import { StageBreakdown } from './stage-breakdown'
+import { InfoTooltip } from '../info-tooltip'
 
 interface Counts {
   byTag: Record<Tag, number>
@@ -75,6 +76,8 @@ export function HomeOverview() {
               icon={BUCKET_CONFIG.all.icon}
               color={BUCKET_CONFIG.all.color}
               bgColor={BUCKET_CONFIG.all.bgColor}
+              description={BUCKET_CONFIG.all.description}
+              testId="stat-card-all"
               onClick={() => router.push('/responses')}
             />
             <StatCard
@@ -83,6 +86,8 @@ export function HomeOverview() {
               icon={BUCKET_CONFIG['needs-action'].icon}
               color={BUCKET_CONFIG['needs-action'].color}
               bgColor={BUCKET_CONFIG['needs-action'].bgColor}
+              description={BUCKET_CONFIG['needs-action'].description}
+              testId="stat-card-needs-action"
               onClick={() => router.push('/responses?bucket=needs-action')}
             />
             <StatCard
@@ -91,6 +96,8 @@ export function HomeOverview() {
               icon={BUCKET_CONFIG.denied.icon}
               color={BUCKET_CONFIG.denied.color}
               bgColor={BUCKET_CONFIG.denied.bgColor}
+              description={BUCKET_CONFIG.denied.description}
+              testId="stat-card-denied"
               onClick={() => router.push('/responses?bucket=denied')}
             />
             <ProgressStatCard
@@ -100,7 +107,9 @@ export function HomeOverview() {
               icon={Gavel}
               color="text-violet-400"
               bgColor="bg-violet-500/10"
-              barColor="bg-violet-500"
+              barColor="bg-violet-500/45"
+              description="Cases where both the applicable jurisdiction and the filing authority have been confirmed, out of all tracked cases."
+              testId="stat-card-cases-confirmed"
               onClick={() => router.push('/case-tracker')}
             />
             <ProgressStatCard
@@ -110,7 +119,9 @@ export function HomeOverview() {
               icon={TriangleAlert}
               color="text-red-400"
               bgColor="bg-red-500/10"
-              barColor="bg-red-500"
+              barColor="bg-red-500/45"
+              description="Active cases (not yet complaint-filed) whose response deadline has already passed, out of all active cases."
+              testId="stat-card-cases-overdue"
               onClick={() => router.push('/case-tracker')}
             />
             <ProgressStatCard
@@ -120,7 +131,9 @@ export function HomeOverview() {
               icon={FileWarning}
               color="text-amber-400"
               bgColor="bg-amber-500/10"
-              barColor="bg-amber-500"
+              barColor="bg-amber-500/45"
+              description="Law clauses with an AI-proposed change awaiting accept/reject, out of all clauses across every jurisdiction."
+              testId="stat-card-pending-legal-review"
               onClick={() => router.push('/legal-workbook')}
             />
             <ProgressStatCard
@@ -130,52 +143,69 @@ export function HomeOverview() {
               icon={ShieldCheck}
               color="text-emerald-400"
               bgColor="bg-emerald-500/10"
-              barColor="bg-emerald-500"
+              barColor="bg-emerald-500/45"
+              description="Law clauses a human has reviewed and confirmed, out of all clauses across every jurisdiction."
+              testId="stat-card-clauses-verified"
               onClick={() => router.push('/legal-workbook')}
             />
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-zinc-500 dark:text-zinc-400">
-            <button
-              onClick={() => router.push('/responses?bucket=done')}
-              className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
-            >
-              <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG.done.dotColor)} />
-              {BUCKET_CONFIG.done.label}
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket.done ?? 0}</span>
-            </button>
-            <button
-              onClick={() => router.push('/responses?bucket=no-action')}
-              className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
-            >
-              <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG['no-action'].dotColor)} />
-              {BUCKET_CONFIG['no-action'].label}
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket['no-action'] ?? 0}</span>
-            </button>
-            <button
-              onClick={() => router.push('/responses?bucket=review')}
-              className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
-            >
-              <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG.review.dotColor)} />
-              {BUCKET_CONFIG.review.label}
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket.review ?? 0}</span>
-            </button>
-            <button
-              onClick={() => router.push('/legal-workbook')}
-              className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
-            >
-              <Globe2 className="h-3 w-3 text-zinc-400" />
-              Jurisdictions
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{regimes.length}</span>
-            </button>
-            <button
-              onClick={() => router.push('/case-tracker')}
-              className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
-            >
-              <Gavel className="h-3 w-3 text-zinc-400" />
-              Cases
-              <span className="font-medium text-zinc-700 dark:text-zinc-300">{cases.length}</span>
-            </button>
+            <InfoTooltip content={BUCKET_CONFIG.done.description}>
+              <button
+                onClick={() => router.push('/responses?bucket=done')}
+                data-testid="legend-done"
+                className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
+              >
+                <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG.done.dotColor)} />
+                {BUCKET_CONFIG.done.label}
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket.done ?? 0}</span>
+              </button>
+            </InfoTooltip>
+            <InfoTooltip content={BUCKET_CONFIG['no-action'].description}>
+              <button
+                onClick={() => router.push('/responses?bucket=no-action')}
+                data-testid="legend-no-action"
+                className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
+              >
+                <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG['no-action'].dotColor)} />
+                {BUCKET_CONFIG['no-action'].label}
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket['no-action'] ?? 0}</span>
+              </button>
+            </InfoTooltip>
+            <InfoTooltip content={BUCKET_CONFIG.review.description}>
+              <button
+                onClick={() => router.push('/responses?bucket=review')}
+                data-testid="legend-review"
+                className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
+              >
+                <span className={cn('h-1.5 w-1.5 rounded-full', BUCKET_CONFIG.review.dotColor)} />
+                {BUCKET_CONFIG.review.label}
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">{counts?.byBucket.review ?? 0}</span>
+              </button>
+            </InfoTooltip>
+            <InfoTooltip content="Jurisdictions with a legal workbook entry — data-protection regimes we have clause reference data for.">
+              <button
+                onClick={() => router.push('/legal-workbook')}
+                data-testid="legend-jurisdictions"
+                className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
+              >
+                <Globe2 className="h-3 w-3 text-zinc-400" />
+                Jurisdictions
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">{regimes.length}</span>
+              </button>
+            </InfoTooltip>
+            <InfoTooltip content="Broker non-response cases currently being tracked through the enforcement pipeline.">
+              <button
+                onClick={() => router.push('/case-tracker')}
+                data-testid="legend-cases"
+                className="flex items-center gap-1.5 hover:text-zinc-700 dark:hover:text-zinc-200"
+              >
+                <Gavel className="h-3 w-3 text-zinc-400" />
+                Cases
+                <span className="font-medium text-zinc-700 dark:text-zinc-300">{cases.length}</span>
+              </button>
+            </InfoTooltip>
           </div>
         </section>
 
@@ -193,6 +223,7 @@ export function HomeOverview() {
                   <button
                     key={a.id}
                     onClick={() => router.push(`/responses?open=${a.responseId}`)}
+                    data-testid={`activity-row-${a.id}`}
                     className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/60"
                   >
                     <div className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-md', iconConfig.bgColor)}>
