@@ -3,7 +3,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type Case } from '@/lib/types'
+import { ENFORCEMENT_STAGES, type EnforcementStage } from '@/lib/case-tracker'
 import { NavRail } from '../nav-rail'
+import { CaseSidebar } from './case-sidebar'
 import { CaseList } from './case-list'
 import { CaseDetail } from './case-detail'
 import { NewCaseDialog } from './new-case-dialog'
@@ -13,6 +15,8 @@ export function CaseTracker() {
   const [cases, setCases] = useState<Case[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [activeStage, setActiveStage] = useState<EnforcementStage | 'all'>('all')
+  const [search, setSearch] = useState('')
   const [newCaseOpen, setNewCaseOpen] = useState(false)
 
   const fetchCases = useCallback(async () => {
@@ -43,6 +47,25 @@ export function CaseTracker() {
   }, [])
 
   const selected = cases.find((c) => c.id === selectedId) ?? null
+  const filteredCases = cases
+    .filter((c) => activeStage === 'all' || c.enforcementStage === activeStage)
+    .filter((c) => {
+      if (!search) return true
+      const q = search.toLowerCase()
+      return (
+        c.brokerName.toLowerCase().includes(q) ||
+        c.userCountry.toLowerCase().includes(q) ||
+        (c.userState ?? '').toLowerCase().includes(q)
+      )
+    })
+
+  // Counts always reflect the full case list, independent of activeStage, so
+  // switching filters doesn't make other stages' counts disappear — mirrors
+  // how the dashboard's Sidebar counts come from an unfiltered source.
+  const stageCounts = ENFORCEMENT_STAGES.reduce((acc, stage) => {
+    acc[stage] = cases.filter((c) => c.enforcementStage === stage).length
+    return acc
+  }, {} as Record<EnforcementStage, number>)
 
   async function handleConfirmJurisdiction(id: string) {
     const res = await fetch(`/api/cases/${id}/confirm-jurisdiction`, { method: 'PATCH' })
@@ -78,13 +101,22 @@ export function CaseTracker() {
     <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
       <div className="flex flex-1 overflow-hidden">
         <NavRail active="cases" />
+        <CaseSidebar
+          activeStage={activeStage}
+          onStageSelect={setActiveStage}
+          counts={stageCounts}
+          totalCount={cases.length}
+        />
         <CaseList
-          cases={cases}
+          cases={filteredCases}
           loading={loading}
           selectedId={selectedId}
+          activeStage={activeStage}
+          search={search}
           onSelect={setSelectedId}
           onNewCase={() => setNewCaseOpen(true)}
           onRefresh={fetchCases}
+          onSearch={setSearch}
         />
         <CaseDetail
           kase={selected}
