@@ -26,8 +26,7 @@ export default function OpengraphImage() {
             width: 140,
             height: 140,
             borderRadius: 24,
-            background: '#18181b',
-            border: '1px solid #27272a',
+            background: '#2563eb',
             marginBottom: 36,
           }}
         >
@@ -36,7 +35,7 @@ export default function OpengraphImage() {
             height="72"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#3b82f6"
+            stroke="#ffffff"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
