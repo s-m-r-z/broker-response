@@ -13,10 +13,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as Theme | null
-    const resolved = stored ?? 'dark'
-    setTheme(resolved)
-    document.documentElement.classList.toggle('dark', resolved === 'dark')
+    // The `dark` class is already applied by the blocking inline script in
+    // app/layout.tsx (runs before first paint, avoiding a theme flash) —
+    // this just syncs React state to match what's already on the DOM.
+    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light')
   }, [])
 
   function toggle() {
