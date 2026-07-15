@@ -76,7 +76,8 @@ export interface ActionLog {
   createdAt: string
 }
 
-export interface RecentActivityItem {
+export interface ResponseActivityItem {
+  source: 'response'
   id: string
   responseId: string
   type: ActionType
@@ -85,6 +86,21 @@ export interface RecentActivityItem {
   createdAt: string
   response: { id: string; brokerName: string; tag: Tag }
 }
+
+export interface CaseActivityItem {
+  source: 'case'
+  id: string
+  caseId: string
+  type: CaseActionLogType
+  stage: EnforcementStage | null
+  note: string | null
+  createdAt: string
+  case: { id: string; brokerName: string; enforcementStage: EnforcementStage }
+}
+
+// Merges ActionLog (BrokerResponse history) and CaseActionLog (Case history)
+// into one feed for Home Overview's Recent Activity — see app/api/activity.
+export type RecentActivityItem = ResponseActivityItem | CaseActivityItem
 
 export interface BrokerResponse {
   id: string

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShieldCheck, FileWarning, Globe2, Gavel, TriangleAlert } from 'lucide-react'
+import { ShieldCheck, FileWarning, Globe2, Gavel, TriangleAlert, Clock } from 'lucide-react'
 import { type Bucket, type Tag, type LawRegime, type RecentActivityItem, type Case } from '@/lib/types'
-import { BUCKET_CONFIG, ACTION_LABELS, ACTION_ICON_CONFIG } from '@/lib/constants'
+import { BUCKET_CONFIG, ACTION_LABELS, ACTION_ICON_CONFIG, STAGE_CONFIG, CASE_EVENT_CONFIG } from '@/lib/constants'
 import { type EnforcementStage } from '@/lib/case-tracker'
 import { cn } from '@/lib/utils'
 import { formatRelativeTime } from '@/lib/utils'
@@ -217,6 +217,33 @@ export function HomeOverview() {
             <div className="space-y-2">
               {activity.length === 0 && <p className="text-sm text-zinc-400">No activity yet.</p>}
               {activity.map((a) => {
+                if (a.source === 'case') {
+                  const config =
+                    a.type === 'STAGE_ADVANCED' && a.stage ? STAGE_CONFIG[a.stage] : CASE_EVENT_CONFIG[a.type as 'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED']
+                  const Icon = config?.icon ?? Clock
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => router.push(`/case-tracker?open=${a.caseId}`)}
+                      data-testid={`activity-row-${a.id}`}
+                      className="flex w-full items-center gap-3 rounded-lg border border-zinc-200 bg-white p-3 text-left transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/60"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-zinc-500/10">
+                        <Icon className="h-3.5 w-3.5 text-zinc-400" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          {config?.label ?? a.type} · {a.case.brokerName}
+                        </p>
+                        {a.note && <p className="mt-0.5 truncate text-xs text-zinc-500">{a.note}</p>}
+                      </div>
+                      <span className="shrink-0 text-[10px] text-zinc-400 dark:text-zinc-600">
+                        {formatRelativeTime(a.createdAt)}
+                      </span>
+                    </button>
+                  )
+                }
+
                 const iconConfig = ACTION_ICON_CONFIG[a.type]
                 const Icon = iconConfig.icon
                 return (
