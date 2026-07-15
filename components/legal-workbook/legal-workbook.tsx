@@ -1,14 +1,20 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { type LawRegime } from '@/lib/types'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { type LawRegime, type Case, type BrokerResponse } from '@/lib/types'
+import { matchesJurisdiction } from '@/lib/jurisdiction-map'
 import { NavRail } from '../nav-rail'
 import { RegimeSidebar } from './regime-sidebar'
 import { RegimeDetail } from './regime-detail'
 import { AddRegimeDialog } from './add-regime-dialog'
 
 export function LegalWorkbook() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [regimes, setRegimes] = useState<LawRegime[]>([])
+  const [cases, setCases] = useState<Case[]>([])
+  const [responses, setResponses] = useState<BrokerResponse[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [addOpen, setAddOpen] = useState(false)
 
@@ -24,7 +30,39 @@ export function LegalWorkbook() {
     fetchRegimes()
   }, [fetchRegimes])
 
+  // Cross-area counts for the "N cases / N responses in this jurisdiction"
+  // jump links on RegimeDetail — same reasoning as home-overview.tsx pulling
+  // counts from all three areas, just scoped to the selected regime here.
+  useEffect(() => {
+    fetch('/api/cases').then((r) => (r.ok ? r.json() : [])).then(setCases)
+    fetch('/api/responses?pageSize=1000').then((r) => (r.ok ? r.json() : { data: [] })).then((d) => setResponses(d.data ?? []))
+  }, [])
+
+  // One-time deep-link support, e.g. from a case/response's Relevant Law
+  // panel: ?open= fetches and selects a specific regime directly, mirroring
+  // the /responses?open= and /case-tracker?open= convention.
+  useEffect(() => {
+    const openId = searchParams.get('open')
+    if (openId) {
+      fetch(`/api/legal/regimes/${openId}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: LawRegime | null) => {
+          if (!data) return
+          setRegimes((prev) => (prev.some((r) => r.id === data.id) ? prev : [data, ...prev]))
+          setSelectedId(data.id)
+        })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const selected = regimes.find((r) => r.id === selectedId) ?? null
+
+  const caseCount = selected
+    ? cases.filter((c) => matchesJurisdiction(selected, c.userState ? `${c.userState}, ${c.userCountry}` : c.userCountry)).length
+    : 0
+  const responseCount = selected
+    ? responses.filter((r) => r.jurisdiction && matchesJurisdiction(selected, r.jurisdiction)).length
+    : 0
 
   async function handleRecheck(id: string) {
     await fetch(`/api/legal/regimes/${id}/recheck`, { method: 'POST' })
@@ -61,9 +99,13 @@ export function LegalWorkbook() {
         />
         <RegimeDetail
           regime={selected}
+          caseCount={caseCount}
+          responseCount={responseCount}
           onRecheck={handleRecheck}
           onToggleVerified={handleToggleVerified}
           onReviewChange={handleReviewChange}
+          onViewCases={() => router.push('/case-tracker')}
+          onViewResponses={() => router.push('/responses')}
         />
       </div>
 

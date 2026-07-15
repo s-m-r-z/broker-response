@@ -13,9 +13,10 @@ interface NewCaseDialogProps {
   onCreated: (kase: Case) => void
   initialBrokerName?: string
   initialBrokerCountry?: string
+  initialSourceResponseId?: string
 }
 
-export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, initialBrokerCountry }: NewCaseDialogProps) {
+export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, initialBrokerCountry, initialSourceResponseId }: NewCaseDialogProps) {
   const [userCountry, setUserCountry] = useState('')
   const [userState, setUserState] = useState('')
   const [brokerName, setBrokerName] = useState('')
@@ -58,6 +59,7 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
           brokerName,
           brokerCountry,
           removalRequestDate: new Date(removalRequestDate).toISOString(),
+          sourceResponseId: initialSourceResponseId,
         }),
       })
       if (!res.ok) {

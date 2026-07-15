@@ -9,8 +9,9 @@ interface StagePipelineProps {
 }
 
 // Read-only breadcrumb of where a case sits in the enforcement timeline.
-// There's no API to transition enforcementStage yet (out of scope — see
-// lib/case-tracker.ts), so this only ever reflects the stored value.
+// Advancing the stage happens via the Enforcement panel below (see
+// enforcement-actions.tsx) — this component only ever reflects the stored
+// value, it never triggers a transition itself.
 export function StagePipeline({ stage }: StagePipelineProps) {
   const currentIndex = ENFORCEMENT_STAGES.indexOf(stage)
 

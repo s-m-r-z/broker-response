@@ -16,7 +16,16 @@ export const createCaseSchema = z
     brokerName: z.string().min(1),
     brokerCountry: z.string().min(1),
     removalRequestDate: z.string().datetime({ message: 'removalRequestDate must be ISO 8601 UTC' }),
+    sourceResponseId: z.string().min(1).optional(),
   })
   .strict()
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>
+
+export const advanceCaseSchema = z
+  .object({
+    note: z.string().min(1).optional(),
+  })
+  .strict()
+
+export type AdvanceCaseInput = z.infer<typeof advanceCaseSchema>

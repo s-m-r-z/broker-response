@@ -10,12 +10,25 @@ import { Callout } from './callout'
 
 interface RegimeDetailProps {
   regime: LawRegime | null
+  caseCount: number
+  responseCount: number
   onRecheck: (id: string) => Promise<void>
   onToggleVerified: (id: string, verified: boolean) => Promise<void>
   onReviewChange: (changeId: string, action: 'accept' | 'reject') => Promise<void>
+  onViewCases: () => void
+  onViewResponses: () => void
 }
 
-export function RegimeDetail({ regime, onRecheck, onToggleVerified, onReviewChange }: RegimeDetailProps) {
+export function RegimeDetail({
+  regime,
+  caseCount,
+  responseCount,
+  onRecheck,
+  onToggleVerified,
+  onReviewChange,
+  onViewCases,
+  onViewResponses,
+}: RegimeDetailProps) {
   const [rechecking, setRechecking] = useState(false)
 
   if (!regime) {
@@ -57,6 +70,20 @@ export function RegimeDetail({ regime, onRecheck, onToggleVerified, onReviewChan
           {regime.lastCheckedAt ? `Last checked ${formatRelativeTime(regime.lastCheckedAt)}` : 'Never checked'}
           {regime.sourceModel && ` · source: ${regime.sourceModel}`}
         </p>
+        {(caseCount > 0 || responseCount > 0) && (
+          <div className="mt-2 flex items-center gap-4 text-xs text-zinc-500 dark:text-zinc-400">
+            {responseCount > 0 && (
+              <button onClick={onViewResponses} className="hover:text-zinc-700 dark:hover:text-zinc-200" data-testid="regime-view-responses">
+                {responseCount} {responseCount === 1 ? 'response' : 'responses'} in this jurisdiction
+              </button>
+            )}
+            {caseCount > 0 && (
+              <button onClick={onViewCases} className="hover:text-zinc-700 dark:hover:text-zinc-200" data-testid="regime-view-cases">
+                {caseCount} {caseCount === 1 ? 'case' : 'cases'} in this jurisdiction
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">

@@ -1,4 +1,4 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType } from './types'
 import { type EnforcementStage } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
@@ -224,6 +224,14 @@ export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: Lucid
   followup_sent: { label: 'Follow-up Sent', icon: RefreshCw, color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/20', barColor: 'bg-blue-500/45', description: 'A follow-up request was sent after the broker missed the deadline.' },
   complaint_eligible: { label: 'Complaint Eligible', icon: ShieldCheck, color: 'text-violet-400', bgColor: 'bg-violet-500/10', borderColor: 'border-violet-500/20', barColor: 'bg-violet-500/45', description: 'Jurisdiction has been confirmed, so a regulatory complaint can now be filed.' },
   complaint_filed: { label: 'Complaint Filed', icon: FileCheck2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', barColor: 'bg-emerald-500/45', description: 'A complaint has been filed with the enforcement authority.' },
+}
+
+// The two non-stage events that also appear in a case's history timeline
+// (components/case-tracker/case-detail.tsx) alongside STAGE_ADVANCED entries,
+// which reuse STAGE_CONFIG above directly instead of needing their own labels.
+export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED', { label: string; icon: LucideIcon }> = {
+  JURISDICTION_CONFIRMED: { label: 'Jurisdiction confirmed', icon: ShieldCheck },
+  AUTHORITY_CONFIRMED: { label: 'Authority confirmed', icon: Gavel },
 }
 
 export const REGIME_LABELS: Record<RegimeCode, string> = {

@@ -1,6 +1,17 @@
 import { type EnforcementStage } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
+export type CaseActionLogType = 'STAGE_ADVANCED' | 'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED'
+
+export interface CaseActionLog {
+  id: string
+  caseId: string
+  type: CaseActionLogType
+  stage: EnforcementStage | null
+  note: string | null
+  createdAt: string
+}
+
 export interface Case {
   id: string
   userCountry: string
@@ -16,8 +27,10 @@ export interface Case {
   maxFine: string
   jurisdictionConfirmedAt: string | null
   authorityConfirmedAt: string | null
+  sourceResponseId: string | null
   createdAt: string
   updatedAt: string
+  actionLogs: CaseActionLog[]
 }
 
 export type Tag =

@@ -54,6 +54,20 @@ export function CaseTracker() {
     if (res.ok) await fetchCases()
   }
 
+  async function handleAdvanceStage(id: string, note?: string) {
+    const res = await fetch(`/api/cases/${id}/advance`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note }),
+    })
+    if (res.ok) {
+      await fetchCases()
+      return {}
+    }
+    const body = await res.json().catch(() => null)
+    return { error: body?.error ?? 'Failed to advance case' }
+  }
+
   function handleCreated(created: Case) {
     setNewCaseOpen(false)
     setSelectedId(created.id)
@@ -76,6 +90,7 @@ export function CaseTracker() {
           kase={selected}
           onConfirmJurisdiction={handleConfirmJurisdiction}
           onConfirmAuthority={handleConfirmAuthority}
+          onAdvanceStage={handleAdvanceStage}
         />
       </div>
 

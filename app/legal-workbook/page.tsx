@@ -1,5 +1,10 @@
+import { Suspense } from 'react'
 import { LegalWorkbook } from '@/components/legal-workbook/legal-workbook'
 
 export default function Page() {
-  return <LegalWorkbook />
+  return (
+    <Suspense>
+      <LegalWorkbook />
+    </Suspense>
+  )
 }

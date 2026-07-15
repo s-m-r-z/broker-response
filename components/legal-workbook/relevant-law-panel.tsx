@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Scale, ChevronDown, ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Scale, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react'
 import { type LawRegime } from '@/lib/types'
+import { matchesJurisdiction } from '@/lib/jurisdiction-map'
 import { ClauseCategoryBadge } from './clause-category-badge'
 import { Button } from '../ui/button'
 
@@ -11,14 +13,8 @@ interface RelevantLawPanelProps {
   onInsertCitation: (text: string) => void
 }
 
-function matchesJurisdiction(regime: LawRegime, jurisdiction: string): boolean {
-  const j = jurisdiction.toLowerCase()
-  const country = regime.country.toLowerCase()
-  const state = regime.state?.toLowerCase()
-  return j.includes(country) || country.includes(j) || (!!state && (j.includes(state) || state.includes(j)))
-}
-
 export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLawPanelProps) {
+  const router = useRouter()
   const [regimes, setRegimes] = useState<LawRegime[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -44,18 +40,29 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
           const isOpen = expandedId === regime.id
           return (
             <div key={regime.id} className="rounded-lg border border-zinc-200 dark:border-zinc-800">
-              <button
-                onClick={() => setExpandedId(isOpen ? null : regime.id)}
-                data-testid={`relevant-law-toggle-${regime.id}`}
-                aria-expanded={isOpen}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300"
-              >
-                {isOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
-                {regime.name}
-                <span className="font-normal text-xs text-zinc-400">
-                  {regime.state ? `${regime.state}, ${regime.country}` : regime.country}
-                </span>
-              </button>
+              <div className="flex items-center gap-1 pr-2">
+                <button
+                  onClick={() => setExpandedId(isOpen ? null : regime.id)}
+                  data-testid={`relevant-law-toggle-${regime.id}`}
+                  aria-expanded={isOpen}
+                  className="flex flex-1 items-center gap-2 px-3 py-2 text-left text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                >
+                  {isOpen ? <ChevronDown className="h-3.5 w-3.5 shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 shrink-0" />}
+                  {regime.name}
+                  <span className="font-normal text-xs text-zinc-400">
+                    {regime.state ? `${regime.state}, ${regime.country}` : regime.country}
+                  </span>
+                </button>
+                <button
+                  onClick={() => router.push(`/legal-workbook?open=${regime.id}`)}
+                  aria-label="Open in Legal Workbook"
+                  title="Open in Legal Workbook"
+                  data-testid={`relevant-law-open-${regime.id}`}
+                  className="shrink-0 rounded-md p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </button>
+              </div>
               {isOpen && (
                 <div className="space-y-2 border-t border-zinc-200 px-3 py-2 dark:border-zinc-800">
                   {regime.clauses.map((clause) => (

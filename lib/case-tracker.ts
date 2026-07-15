@@ -21,6 +21,12 @@ export function isEnforcementStage(value: string): value is EnforcementStage {
   return (ENFORCEMENT_STAGES as readonly string[]).includes(value)
 }
 
+/** The next stage in the pipeline, or null if already at the terminal stage. */
+export function getNextStage(stage: EnforcementStage): EnforcementStage | null {
+  const i = ENFORCEMENT_STAGES.indexOf(stage)
+  return i === ENFORCEMENT_STAGES.length - 1 ? null : ENFORCEMENT_STAGES[i + 1]
+}
+
 export interface DeriveCaseFieldsInput {
   userCountry: string
   userState?: string | null
@@ -58,6 +64,7 @@ export function deriveCaseFields(input: DeriveCaseFieldsInput): DeriveCaseFields
 }
 
 export interface StageTransitionCheckInput {
+  currentStage: EnforcementStage
   targetStage: EnforcementStage
   jurisdictionConfirmedAt: Date | null
   authorityConfirmedAt: Date | null
@@ -65,7 +72,16 @@ export interface StageTransitionCheckInput {
 
 export type StageTransitionResult = { ok: true } | { ok: false; error: string }
 
+/** Stages can only advance one at a time, in pipeline order — no skipping ahead, no going back. */
 export function canTransitionStage(input: StageTransitionCheckInput): StageTransitionResult {
+  const currentIndex = ENFORCEMENT_STAGES.indexOf(input.currentStage)
+  const targetIndex = ENFORCEMENT_STAGES.indexOf(input.targetStage)
+  if (targetIndex !== currentIndex + 1) {
+    return {
+      ok: false,
+      error: `Cannot advance from ${input.currentStage} to ${input.targetStage} — stages must be advanced one at a time, in order.`,
+    }
+  }
   if (input.targetStage === 'complaint_eligible' && !input.jurisdictionConfirmedAt) {
     return { ok: false, error: 'Case cannot reach complaint_eligible without jurisdiction confirmed.' }
   }

@@ -1,21 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import { Inbox, MapPin, Calendar, ShieldCheck, Gavel, Loader2, ExternalLink, CheckCircle2 } from 'lucide-react'
-import { type Case } from '@/lib/types'
+import { useRouter } from 'next/navigation'
+import { Inbox, MapPin, Calendar, ShieldCheck, Gavel, Loader2, ExternalLink, CheckCircle2, Clock } from 'lucide-react'
+import { type Case, type CaseActionLog } from '@/lib/types'
 import { formatDate, formatRelativeTime } from '@/lib/utils'
+import { STAGE_CONFIG, CASE_EVENT_CONFIG } from '@/lib/constants'
 import { Button } from '../ui/button'
 import { StagePipeline } from './stage-pipeline'
 import { RegimeBadge } from './regime-badge'
+import { DeadlineChip } from './deadline-chip'
+import { EnforcementActions } from './enforcement-actions'
+import { RelevantLawPanel } from '../legal-workbook/relevant-law-panel'
 
 interface CaseDetailProps {
   kase: Case | null
   onConfirmJurisdiction: (id: string) => Promise<void>
   onConfirmAuthority: (id: string) => Promise<void>
+  onAdvanceStage: (id: string, note?: string) => Promise<{ error?: string } | void>
 }
 
-export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: CaseDetailProps) {
+export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, onAdvanceStage }: CaseDetailProps) {
+  const router = useRouter()
   const [confirming, setConfirming] = useState<'jurisdiction' | 'authority' | null>(null)
+  const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
 
   if (!kase) {
     return (
@@ -52,7 +60,10 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
               {kase.userState ? `${kase.userState}, ${kase.userCountry}` : kase.userCountry}
             </p>
           </div>
-          <RegimeBadge regime={kase.applicableRegime} />
+          <div className="flex items-center gap-2">
+            <DeadlineChip deadline={kase.responseDeadlineDate} />
+            <RegimeBadge regime={kase.applicableRegime} />
+          </div>
         </div>
 
         <div className="mt-4">
@@ -84,6 +95,21 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
                 </dt>
                 <dd className="text-zinc-700 dark:text-zinc-300">{formatDate(kase.responseDeadlineDate)}</dd>
               </div>
+              {kase.sourceResponseId && (
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-zinc-500">Tracked from</dt>
+                  <dd>
+                    <button
+                      onClick={() => router.push(`/responses?open=${kase.sourceResponseId}`)}
+                      className="flex items-center gap-1 text-blue-500 hover:underline"
+                      data-testid="case-view-source-response"
+                    >
+                      View Original Response
+                      <ExternalLink className="h-3 w-3" />
+                    </button>
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
 
@@ -138,6 +164,14 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
           </div>
         </div>
 
+        <RelevantLawPanel
+          jurisdiction={kase.userState ? `${kase.userState}, ${kase.userCountry}` : kase.userCountry}
+          onInsertCitation={(text) => setInsertCitation({ text, nonce: Date.now() })}
+        />
+
+        {/* Enforcement actions */}
+        <EnforcementActions kase={kase} onAdvance={onAdvanceStage} insertCitation={insertCitation} />
+
         {/* Complaint pack */}
         <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
@@ -173,6 +207,41 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority }: 
             </p>
           )}
         </div>
+
+        {kase.actionLogs.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
+              Case History
+            </p>
+            <div className="space-y-2">
+              {kase.actionLogs.map((entry) => (
+                <CaseHistoryItem key={entry.id} entry={entry} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CaseHistoryItem({ entry }: { entry: CaseActionLog }) {
+  const config =
+    entry.type === 'STAGE_ADVANCED' && entry.stage
+      ? STAGE_CONFIG[entry.stage]
+      : entry.type !== 'STAGE_ADVANCED'
+        ? CASE_EVENT_CONFIG[entry.type]
+        : null
+  const Icon = config?.icon ?? Clock
+  return (
+    <div data-testid={`case-history-item-${entry.id}`} className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+      <Icon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{config?.label ?? entry.type}</p>
+        {entry.note && (
+          <p className="text-xs text-zinc-600 mt-1 dark:text-zinc-400">{entry.note}</p>
+        )}
+        <p className="text-[10px] text-zinc-400 mt-1 dark:text-zinc-600">{formatRelativeTime(entry.createdAt)}</p>
       </div>
     </div>
   )

@@ -201,6 +201,7 @@ export function Dashboard() {
         onCreated={handleCaseCreated}
         initialBrokerName={selectedResponse?.brokerName}
         initialBrokerCountry={selectedResponse?.jurisdiction ?? undefined}
+        initialSourceResponseId={selectedResponse?.id}
       />
 
       {selectedIds.length > 0 && (

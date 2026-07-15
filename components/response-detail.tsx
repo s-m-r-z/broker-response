@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Mail,
   Scale,
@@ -14,7 +15,7 @@ import {
   Tag as TagIcon,
   Gavel,
 } from 'lucide-react'
-import { type BrokerResponse, type ActionLog } from '@/lib/types'
+import { type BrokerResponse, type ActionLog, type Case } from '@/lib/types'
 import { TagBadge } from './tag-badge'
 import { StatusBadge } from './status-badge'
 import { Button } from './ui/button'
@@ -31,7 +32,17 @@ interface ResponseDetailProps {
 }
 
 export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase }: ResponseDetailProps) {
+  const router = useRouter()
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [linkedCase, setLinkedCase] = useState<Case | null>(null)
+
+  useEffect(() => {
+    setLinkedCase(null)
+    if (!response) return
+    fetch(`/api/cases?sourceResponseId=${response.id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: Case[] | null) => setLinkedCase(data?.[0] ?? null))
+  }, [response?.id])
 
   async function handle(action: string) {
     setLoadingAction(action)
@@ -149,10 +160,23 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           Mark Resolved
         </Button>
 
-        <Button size="sm" variant="outline" onClick={onTrackCase} title="Open the case tracker to escalate this non-response" data-testid="response-action-track-case">
-          <Gavel className="h-3.5 w-3.5" />
-          Track as Case
-        </Button>
+        {linkedCase ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => router.push(`/case-tracker?open=${linkedCase.id}`)}
+            title="Open the case already being tracked for this response"
+            data-testid="response-action-view-case"
+          >
+            <Gavel className="h-3.5 w-3.5" />
+            View Case
+          </Button>
+        ) : (
+          <Button size="sm" variant="outline" onClick={onTrackCase} title="Open the case tracker to escalate this non-response" data-testid="response-action-track-case">
+            <Gavel className="h-3.5 w-3.5" />
+            Track as Case
+          </Button>
+        )}
       </div>
 
       {/* Response content + action history */}

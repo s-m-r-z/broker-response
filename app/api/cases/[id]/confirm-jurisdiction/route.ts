@@ -14,10 +14,10 @@ export async function PATCH(_req: NextRequest, { params }: { params: Promise<{ i
     return NextResponse.json({ error: check.error }, { status: 409 })
   }
 
-  const updated = await prisma.case.update({
-    where: { id },
-    data: { jurisdictionConfirmedAt: new Date() },
-  })
+  const [updated] = await prisma.$transaction([
+    prisma.case.update({ where: { id }, data: { jurisdictionConfirmedAt: new Date() } }),
+    prisma.caseActionLog.create({ data: { caseId: id, type: 'JURISDICTION_CONFIRMED' } }),
+  ])
 
   return NextResponse.json(updated)
 }

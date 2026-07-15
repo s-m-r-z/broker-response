@@ -1,4 +1,4 @@
-import { deriveCaseFields, canTransitionStage, assertConfirmable } from './case-tracker'
+import { deriveCaseFields, canTransitionStage, assertConfirmable, getNextStage, ENFORCEMENT_STAGES } from './case-tracker'
 
 describe('deriveCaseFields', () => {
   it('derives GDPR for a German user with a US-based broker (broker country is not an input)', () => {
@@ -27,9 +27,22 @@ describe('deriveCaseFields', () => {
   })
 })
 
+describe('getNextStage', () => {
+  it('returns the immediate successor for every non-terminal stage', () => {
+    for (let i = 0; i < ENFORCEMENT_STAGES.length - 1; i++) {
+      expect(getNextStage(ENFORCEMENT_STAGES[i])).toBe(ENFORCEMENT_STAGES[i + 1])
+    }
+  })
+
+  it('returns null at the terminal stage', () => {
+    expect(getNextStage('complaint_filed')).toBeNull()
+  })
+})
+
 describe('canTransitionStage', () => {
   it('blocks complaint_eligible without jurisdiction confirmed', () => {
     const result = canTransitionStage({
+      currentStage: 'followup_sent',
       targetStage: 'complaint_eligible',
       jurisdictionConfirmedAt: null,
       authorityConfirmedAt: null,
@@ -39,6 +52,7 @@ describe('canTransitionStage', () => {
 
   it('allows complaint_eligible once jurisdiction is confirmed', () => {
     const result = canTransitionStage({
+      currentStage: 'followup_sent',
       targetStage: 'complaint_eligible',
       jurisdictionConfirmedAt: new Date(),
       authorityConfirmedAt: null,
@@ -48,6 +62,7 @@ describe('canTransitionStage', () => {
 
   it('blocks complaint_filed without authority confirmed', () => {
     const result = canTransitionStage({
+      currentStage: 'complaint_eligible',
       targetStage: 'complaint_filed',
       jurisdictionConfirmedAt: new Date(),
       authorityConfirmedAt: null,
@@ -57,11 +72,49 @@ describe('canTransitionStage', () => {
 
   it('allows complaint_filed once authority is confirmed', () => {
     const result = canTransitionStage({
+      currentStage: 'complaint_eligible',
       targetStage: 'complaint_filed',
       jurisdictionConfirmedAt: new Date(),
       authorityConfirmedAt: new Date(),
     })
     expect(result.ok).toBe(true)
+  })
+
+  it('allows each unconditional adjacent transition with no confirmations set', () => {
+    const pairs: [import('./case-tracker').EnforcementStage, import('./case-tracker').EnforcementStage][] = [
+      ['request_sent', 'deadline_approaching'],
+      ['deadline_approaching', 'deadline_passed'],
+      ['deadline_passed', 'followup_sent'],
+    ]
+    for (const [currentStage, targetStage] of pairs) {
+      const result = canTransitionStage({
+        currentStage,
+        targetStage,
+        jurisdictionConfirmedAt: null,
+        authorityConfirmedAt: null,
+      })
+      expect(result.ok).toBe(true)
+    }
+  })
+
+  it('blocks skipping ahead even when both confirmations are set', () => {
+    const result = canTransitionStage({
+      currentStage: 'request_sent',
+      targetStage: 'complaint_filed',
+      jurisdictionConfirmedAt: new Date(),
+      authorityConfirmedAt: new Date(),
+    })
+    expect(result.ok).toBe(false)
+  })
+
+  it('blocks moving backward', () => {
+    const result = canTransitionStage({
+      currentStage: 'deadline_approaching',
+      targetStage: 'request_sent',
+      jurisdictionConfirmedAt: null,
+      authorityConfirmedAt: null,
+    })
+    expect(result.ok).toBe(false)
   })
 })
 

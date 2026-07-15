@@ -106,6 +106,24 @@ model Case {
   maxFine               String
   jurisdictionConfirmedAt DateTime?
   authorityConfirmedAt    DateTime?
+  sourceResponseId       String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  actionLogs            CaseActionLog[]
+}
+
+// Append-only history of what happened on a case: enforcement-stage advances
+// (type STAGE_ADVANCED, with `stage` set to the EnforcementStage reached —
+// reuses STAGE_CONFIG in lib/constants.ts for label/icon, no separate config
+// needed) plus the two confirmation events (JURISDICTION_CONFIRMED /
+// AUTHORITY_CONFIRMED, `stage` null). Mirrors ActionLog's role for
+// BrokerResponse, scoped to Case instead.
+model CaseActionLog {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type      String
+  stage     String?
+  note      String?
+  createdAt DateTime @default(now())
 }

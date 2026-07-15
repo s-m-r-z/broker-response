@@ -86,6 +86,18 @@ function normalize(value: string): string {
   return value.trim().toLowerCase()
 }
 
+// Loose substring match between a free-text jurisdiction string (a broker
+// response's `jurisdiction` field, or a case's `userState, userCountry`) and
+// a legal workbook regime's country/state. Structurally typed (not LawRegime
+// from lib/types.ts) to avoid a circular import — types.ts already imports
+// RegimeCode from this file.
+export function matchesJurisdiction(regime: { country: string; state?: string | null }, jurisdiction: string): boolean {
+  const j = normalize(jurisdiction)
+  const country = normalize(regime.country)
+  const state = regime.state ? normalize(regime.state) : null
+  return j.includes(country) || country.includes(j) || (!!state && (j.includes(state) || state.includes(j)))
+}
+
 /**
  * Resolves the applicable enforcement regime from the *user's* location.
  * `userCountry`/`userState` must come from the requester, never the broker.
