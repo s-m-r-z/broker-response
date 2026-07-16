@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, CircleCheck, Loader2, X } from 'lucide-react'
+import { Check, CheckCircle2, Loader2, X } from 'lucide-react'
 import { type LawClause } from '@/lib/types'
 import { ClauseCategoryBadge } from './clause-category-badge'
 import { Callout } from './callout'
@@ -28,7 +28,7 @@ function VerifiedBadge({ verified }: { verified: boolean }) {
   return (
     <InfoTooltip content="A member of legal counsel has reviewed and confirmed this clause's text and citation.">
       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-500 dark:text-emerald-400">
-        <CircleCheck className="h-3 w-3" />
+        <CheckCircle2 className="h-3 w-3" />
         Verified
       </span>
     </InfoTooltip>
@@ -87,7 +87,7 @@ export function ClauseCard({ clause, onToggleVerified, onReviewChange }: ClauseC
           </p>
           <div className="flex gap-2">
             <Button size="sm" variant="success" disabled={busy} onClick={() => handleReview('accept')} data-testid={`clause-card-${clause.id}-accept`}>
-              <Check className="h-3.5 w-3.5" />
+              <CheckCircle2 className="h-3.5 w-3.5" />
               Accept
             </Button>
             <Button size="sm" variant="outline" disabled={busy} onClick={() => handleReview('reject')} data-testid={`clause-card-${clause.id}-reject`}>

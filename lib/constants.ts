@@ -1,5 +1,5 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, type LucideIcon } from 'lucide-react'
-import { type Tag, type Bucket, type Status, type ActionType } from './types'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, type LucideIcon } from 'lucide-react'
+import { type Tag, type Bucket, type Status, type ActionType, type Stakeholder } from './types'
 import { type EnforcementStage } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
@@ -26,6 +26,7 @@ export const ACTION_LABELS: Record<ActionType, string> = {
   MARKED_RESOLVED: 'Marked resolved',
   RE_SENT: 'Re-sent request',
   NOTE_ADDED: 'Note added',
+  ASSIGNED: 'Assigned',
 }
 
 // Monotone by design: this is a history log of what happened, not a current
@@ -36,6 +37,30 @@ export const ACTION_ICON_CONFIG: Record<ActionType, { icon: LucideIcon; color: s
   MARKED_RESOLVED: { icon: CheckCircle2, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
   RE_SENT: { icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
   NOTE_ADDED: { icon: StickyNote, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+  ASSIGNED: { icon: UserPlus, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+}
+
+// The stakeholders legal counsel can hand a broker response off to for
+// follow-up (see components/assign-stakeholder-dialog.tsx). Colors chosen to
+// avoid clashing with STATUS_CONFIG's adjacent blue (In Progress) / violet
+// (Legal) badges, since AssigneeBadge renders right next to StatusBadge.
+export const STAKEHOLDER_CONFIG: Record<Stakeholder, { label: string; icon: LucideIcon; color: string; bgColor: string; borderColor: string; description: string }> = {
+  PRODUCT_MANAGER: {
+    label: 'Product Manager',
+    icon: Briefcase,
+    color: 'text-sky-400',
+    bgColor: 'bg-sky-500/10',
+    borderColor: 'border-sky-500/20',
+    description: 'Assigned to the Product Manager for a product-facing decision or follow-up.',
+  },
+  ENGINEERING: {
+    label: 'Engineering',
+    icon: Wrench,
+    color: 'text-pink-400',
+    bgColor: 'bg-pink-500/10',
+    borderColor: 'border-pink-500/20',
+    description: 'Assigned to Engineering for a technical fix or investigation.',
+  },
 }
 
 export const TAG_CONFIG: Record<Tag, {

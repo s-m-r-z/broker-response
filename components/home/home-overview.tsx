@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ShieldCheck, FileWarning, Globe2, Gavel, TriangleAlert, Clock } from 'lucide-react'
 import { type Bucket, type Tag, type LawRegime, type RecentActivityItem, type Case } from '@/lib/types'
-import { BUCKET_CONFIG, ACTION_LABELS, ACTION_ICON_CONFIG, STAGE_CONFIG, CASE_EVENT_CONFIG } from '@/lib/constants'
+import { BUCKET_CONFIG, ACTION_LABELS, ACTION_ICON_CONFIG, STAGE_CONFIG, CASE_EVENT_CONFIG, STAKEHOLDER_CONFIG } from '@/lib/constants'
 import { type EnforcementStage } from '@/lib/case-tracker'
 import { cn } from '@/lib/utils'
 import { formatRelativeTime } from '@/lib/utils'
@@ -246,6 +246,10 @@ export function HomeOverview() {
 
                 const iconConfig = ACTION_ICON_CONFIG[a.type]
                 const Icon = iconConfig.icon
+                const label =
+                  a.type === 'ASSIGNED' && a.assignedTo
+                    ? `Assigned to ${STAKEHOLDER_CONFIG[a.assignedTo].label}`
+                    : ACTION_LABELS[a.type] ?? a.type
                 return (
                   <button
                     key={a.id}
@@ -258,7 +262,7 @@ export function HomeOverview() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                        {ACTION_LABELS[a.type] ?? a.type} · {a.response.brokerName}
+                        {label} · {a.response.brokerName}
                       </p>
                       {a.emailSubject && <p className="mt-0.5 truncate text-xs text-zinc-500">{a.emailSubject}</p>}
                       {a.note && <p className="mt-0.5 truncate text-xs text-zinc-500">{a.note}</p>}

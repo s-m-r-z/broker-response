@@ -14,14 +14,16 @@ import {
   MapPin,
   Tag as TagIcon,
   Gavel,
+  UserPlus,
 } from 'lucide-react'
 import { type BrokerResponse, type ActionLog, type Case } from '@/lib/types'
 import { TagBadge } from './tag-badge'
 import { StatusBadge } from './status-badge'
+import { AssigneeBadge } from './assignee-badge'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
-import { formatDate, formatRelativeTime } from '@/lib/utils'
-import { ACTION_LABELS } from '@/lib/constants'
+import { cn, formatDate, formatRelativeTime } from '@/lib/utils'
+import { ACTION_LABELS, ACTION_ICON_CONFIG, STAKEHOLDER_CONFIG } from '@/lib/constants'
 import { RelevantLawPanel } from './legal-workbook/relevant-law-panel'
 
 interface ResponseDetailProps {
@@ -29,9 +31,10 @@ interface ResponseDetailProps {
   onCompose: (insertText?: string) => void
   onStatusChange: (status: string) => Promise<void>
   onTrackCase: () => void
+  onAssign: () => void
 }
 
-export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase }: ResponseDetailProps) {
+export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase, onAssign }: ResponseDetailProps) {
   const router = useRouter()
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [linkedCase, setLinkedCase] = useState<Case | null>(null)
@@ -71,6 +74,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           <div className="flex flex-col items-end gap-1.5">
             <TagBadge tag={response.tag} />
             <StatusBadge status={response.status} />
+            {response.assignedTo && <AssigneeBadge assignedTo={response.assignedTo} />}
           </div>
         </div>
 
@@ -177,6 +181,17 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
             Track as Case
           </Button>
         )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onAssign}
+          title="Assign this response to a stakeholder for follow-up"
+          data-testid="response-action-assign"
+        >
+          <UserPlus className="h-3.5 w-3.5" />
+          {response.assignedTo ? 'Reassign' : 'Assign'}
+        </Button>
       </div>
 
       {/* Response content + action history */}
@@ -212,12 +227,19 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
 }
 
 function ActionItem({ action }: { action: ActionLog }) {
+  const iconConfig = ACTION_ICON_CONFIG[action.type]
+  const Icon = iconConfig?.icon ?? Clock
+  const label =
+    action.type === 'ASSIGNED' && action.assignedTo
+      ? `Assigned to ${STAKEHOLDER_CONFIG[action.assignedTo].label}`
+      : ACTION_LABELS[action.type] ?? action.type
+
   return (
     <div data-testid={`action-history-item-${action.id}`} className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
-      <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-zinc-900 dark:text-zinc-100" />
+      <Icon className={cn('mt-0.5 h-3.5 w-3.5 shrink-0', iconConfig?.color ?? 'text-zinc-900 dark:text-zinc-100')} />
       <div className="min-w-0">
         <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-          {ACTION_LABELS[action.type] ?? action.type}
+          {label}
         </p>
         {action.emailTo && (
           <p className="text-xs text-zinc-500 mt-0.5">To: {action.emailTo}</p>

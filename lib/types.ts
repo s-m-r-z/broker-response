@@ -60,6 +60,9 @@ export type ActionType =
   | 'MARKED_RESOLVED'
   | 'RE_SENT'
   | 'NOTE_ADDED'
+  | 'ASSIGNED'
+
+export type Stakeholder = 'PRODUCT_MANAGER' | 'ENGINEERING'
 
 export type Tier = 'tier_1' | 'tier_2' | 'tier_3'
 
@@ -69,6 +72,7 @@ export interface ActionLog {
   id: string
   responseId: string
   type: ActionType
+  assignedTo: Stakeholder | null
   emailTo: string | null
   emailSubject: string | null
   emailBody: string | null
@@ -81,6 +85,7 @@ export interface ResponseActivityItem {
   id: string
   responseId: string
   type: ActionType
+  assignedTo: Stakeholder | null
   emailSubject: string | null
   note: string | null
   createdAt: string
@@ -110,6 +115,7 @@ export interface BrokerResponse {
   tag: Tag
   tier: Tier | null
   status: Status
+  assignedTo: Stakeholder | null
   notes: string | null
   website: string | null
   jurisdiction: string | null

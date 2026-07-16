@@ -16,6 +16,7 @@ import { ResponseDetail } from './response-detail'
 import { ComposeDrawer } from './compose-drawer'
 import { BulkActionBar } from './bulk-action-bar'
 import { NewCaseDialog } from './case-tracker/new-case-dialog'
+import { AssignStakeholderDialog } from './assign-stakeholder-dialog'
 
 export function Dashboard() {
   const searchParams = useSearchParams()
@@ -29,6 +30,7 @@ export function Dashboard() {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [composeOpen, setComposeOpen] = useState(false)
   const [trackCaseOpen, setTrackCaseOpen] = useState(false)
+  const [assignOpen, setAssignOpen] = useState(false)
   const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
   const [counts, setCounts] = useState<Counts | null>(null)
 
@@ -152,6 +154,11 @@ export function Dashboard() {
     router.push(`/case-tracker?open=${kase.id}`)
   }
 
+  function handleAssigned() {
+    setAssignOpen(false)
+    if (selectedResponse) refreshSelected(selectedResponse.id)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
       <div className="flex flex-1 overflow-hidden">
@@ -184,6 +191,7 @@ export function Dashboard() {
           onCompose={handleCompose}
           onStatusChange={handleStatusChange}
           onTrackCase={() => setTrackCaseOpen(true)}
+          onAssign={() => setAssignOpen(true)}
         />
       </div>
 
@@ -202,6 +210,13 @@ export function Dashboard() {
         initialBrokerName={selectedResponse?.brokerName}
         initialBrokerCountry={selectedResponse?.jurisdiction ?? undefined}
         initialSourceResponseId={selectedResponse?.id}
+      />
+
+      <AssignStakeholderDialog
+        open={assignOpen}
+        onClose={() => setAssignOpen(false)}
+        response={selectedResponse}
+        onAssigned={handleAssigned}
       />
 
       {selectedIds.length > 0 && (

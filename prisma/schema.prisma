@@ -15,6 +15,7 @@ model BrokerResponse {
   tag             String
   tier            String?
   status          String      @default("OPEN")
+  assignedTo      String?
   website         String?
   jurisdiction    String?
   category        String?
@@ -29,6 +30,7 @@ model ActionLog {
   responseId   String
   response     BrokerResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
   type         String
+  assignedTo   String?
   emailTo      String?
   emailSubject String?
   emailBody    String?
