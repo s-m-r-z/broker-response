@@ -69,6 +69,7 @@ const SAMPLES = [
     tier: 'tier_1',
     content:
       'I am currently out of the office until [date] with limited access to email. Your request has been received and will be reviewed upon my return. For urgent matters, please contact our support team.',
+    isHoldingReply: true,
   },
   {
     tag: 'UNDELIVERABLE',
@@ -87,6 +88,7 @@ const SAMPLES = [
     tier: 'tier_2',
     content:
       'We acknowledge your request and will look into it. Our team will be in touch. Thank you for reaching out.',
+    isHoldingReply: true,
   },
 ]
 
@@ -110,6 +112,7 @@ async function main() {
         tag: sample.tag,
         tier: sample.tier,
         status: 'OPEN',
+        isHoldingReply: 'isHoldingReply' in sample ? sample.isHoldingReply : false,
         createdAt,
       },
     })

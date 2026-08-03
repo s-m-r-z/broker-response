@@ -20,6 +20,10 @@ model BrokerResponse {
   jurisdiction    String?
   category        String?
   notes           String?
+  // Set only from the external classification pipeline's ingest payload
+  // (see app/api/ingest) — this app never runs the holding-reply detection
+  // itself, it just renders the flag the classifier already computed.
+  isHoldingReply  Boolean     @default(false)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   actions         ActionLog[]
@@ -109,6 +113,21 @@ model Case {
   jurisdictionConfirmedAt DateTime?
   authorityConfirmedAt    DateTime?
   sourceResponseId       String?
+  // Evidence completeness checklist gating closure (US-19/US-21): each item
+  // is immutable once confirmed (mirrors jurisdictionConfirmedAt/
+  // authorityConfirmedAt above — see lib/case-tracker.ts assertConfirmable).
+  // retentionException additionally carries the confirming note itself,
+  // since "no exception applies" is a valid confirmed value, not an absence.
+  evidenceRequestConfirmedAt   DateTime?
+  evidenceIdentityConfirmedAt  DateTime?
+  evidenceSystemsConfirmedAt   DateTime?
+  evidenceReplyConfirmedAt     DateTime?
+  evidenceRetentionConfirmedAt DateTime?
+  evidenceRetentionNote        String?
+  // Case closure is blocked until all five evidence items above are
+  // confirmed — see lib/case-tracker.ts assertCanClose(). Independent of
+  // enforcementStage, which tracks the enforcement pipeline, not closure.
+  closedAt               DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   actionLogs            CaseActionLog[]

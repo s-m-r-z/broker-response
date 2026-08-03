@@ -6,6 +6,7 @@ import { BUCKET_TAGS } from '@/lib/constants'
 import { TagBadge } from './tag-badge'
 import { StatusBadge } from './status-badge'
 import { AssigneeBadge } from './assignee-badge'
+import { HoldingReplyBadge } from './holding-reply-badge'
 import { Checkbox } from './ui/checkbox'
 import { Input } from './ui/input'
 import { cn, formatRelativeTime } from '@/lib/utils'
@@ -140,6 +141,7 @@ export function ResponseList({
                     <TagBadge tag={r.tag} />
                     <StatusBadge status={r.status} />
                     {r.assignedTo && <AssigneeBadge assignedTo={r.assignedTo} />}
+                    {r.isHoldingReply && <HoldingReplyBadge />}
                   </div>
                   <p className="mt-1 line-clamp-2 text-[11px] text-zinc-400 leading-relaxed dark:text-zinc-500">
                     {r.responseContent}

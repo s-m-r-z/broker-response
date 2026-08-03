@@ -1,7 +1,13 @@
 import { type EnforcementStage } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
-export type CaseActionLogType = 'STAGE_ADVANCED' | 'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED'
+export type CaseActionLogType =
+  | 'STAGE_ADVANCED'
+  | 'JURISDICTION_CONFIRMED'
+  | 'AUTHORITY_CONFIRMED'
+  | 'AUTO_CREATED'
+  | 'EVIDENCE_CONFIRMED'
+  | 'CASE_CLOSED'
 
 export interface CaseActionLog {
   id: string
@@ -28,6 +34,13 @@ export interface Case {
   jurisdictionConfirmedAt: string | null
   authorityConfirmedAt: string | null
   sourceResponseId: string | null
+  evidenceRequestConfirmedAt: string | null
+  evidenceIdentityConfirmedAt: string | null
+  evidenceSystemsConfirmedAt: string | null
+  evidenceReplyConfirmedAt: string | null
+  evidenceRetentionConfirmedAt: string | null
+  evidenceRetentionNote: string | null
+  closedAt: string | null
   createdAt: string
   updatedAt: string
   actionLogs: CaseActionLog[]
@@ -120,6 +133,7 @@ export interface BrokerResponse {
   website: string | null
   jurisdiction: string | null
   category: string | null
+  isHoldingReply: boolean
   createdAt: string
   updatedAt: string
   actions: ActionLog[]

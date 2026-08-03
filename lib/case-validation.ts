@@ -8,6 +8,7 @@
 // has no brokerCountry parameter to derive from in the first place.
 
 import { z } from 'zod'
+import { EVIDENCE_ITEMS } from './case-tracker'
 
 export const createCaseSchema = z
   .object({
@@ -29,3 +30,20 @@ export const advanceCaseSchema = z
   .strict()
 
 export type AdvanceCaseInput = z.infer<typeof advanceCaseSchema>
+
+// Confirms one evidence-checklist item (US-19/US-21). note is required for
+// retentionException specifically — "no exception applies" is itself the
+// confirmed value, not an absence, so it can't be left blank the way an
+// optional note on the other four items can.
+export const confirmEvidenceSchema = z
+  .object({
+    item: z.enum(EVIDENCE_ITEMS),
+    note: z.string().min(1).optional(),
+  })
+  .strict()
+  .refine((data) => data.item !== 'retentionException' || !!data.note, {
+    message: 'note is required when confirming retentionException',
+    path: ['note'],
+  })
+
+export type ConfirmEvidenceInput = z.infer<typeof confirmEvidenceSchema>

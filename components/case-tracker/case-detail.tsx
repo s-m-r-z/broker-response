@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Inbox, MapPin, Calendar, ShieldCheck, Gavel, Loader2, ExternalLink, CheckCircle2, Clock } from 'lucide-react'
 import { type Case, type CaseActionLog } from '@/lib/types'
+import { type EvidenceItem } from '@/lib/case-tracker'
 import { formatDate, formatRelativeTime } from '@/lib/utils'
 import { STAGE_CONFIG, CASE_EVENT_CONFIG } from '@/lib/constants'
 import { Button } from '../ui/button'
@@ -11,6 +12,8 @@ import { StagePipeline } from './stage-pipeline'
 import { RegimeBadge } from './regime-badge'
 import { DeadlineChip } from './deadline-chip'
 import { EnforcementActions } from './enforcement-actions'
+import { EvidenceChecklist } from './evidence-checklist'
+import { RelatedCasesPanel } from './related-cases-panel'
 import { RelevantLawPanel } from '../legal-workbook/relevant-law-panel'
 
 interface CaseDetailProps {
@@ -18,9 +21,11 @@ interface CaseDetailProps {
   onConfirmJurisdiction: (id: string) => Promise<void>
   onConfirmAuthority: (id: string) => Promise<void>
   onAdvanceStage: (id: string, note?: string) => Promise<{ error?: string } | void>
+  onConfirmEvidence: (id: string, item: EvidenceItem, note?: string) => Promise<void>
+  onCloseCase: (id: string) => Promise<{ error?: string } | void>
 }
 
-export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, onAdvanceStage }: CaseDetailProps) {
+export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, onAdvanceStage, onConfirmEvidence, onCloseCase }: CaseDetailProps) {
   const router = useRouter()
   const [confirming, setConfirming] = useState<'jurisdiction' | 'authority' | null>(null)
   const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
@@ -164,6 +169,8 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
           </div>
         </div>
 
+        <RelatedCasesPanel userCountry={kase.userCountry} userState={kase.userState} excludeId={kase.id} />
+
         <RelevantLawPanel
           jurisdiction={kase.userState ? `${kase.userState}, ${kase.userCountry}` : kase.userCountry}
           onInsertCitation={(text) => setInsertCitation({ text, nonce: Date.now() })}
@@ -207,6 +214,12 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
             </p>
           )}
         </div>
+
+        <EvidenceChecklist
+          kase={kase}
+          onConfirmItem={(item, note) => onConfirmEvidence(kase.id, item, note)}
+          onClose={() => onCloseCase(kase.id)}
+        />
 
         {kase.actionLogs.length > 0 && (
           <div>

@@ -1,6 +1,6 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, Sparkles, FileText, UserCheck, Database, MessageSquare, Archive, Lock, PauseCircle, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType, type Stakeholder } from './types'
-import { type EnforcementStage } from './case-tracker'
+import { type EnforcementStage, type EvidenceItem } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
 export const BUCKET_CONFIG: Record<Bucket, {
@@ -195,6 +195,19 @@ export const TAG_CONFIG: Record<Tag, {
   },
 }
 
+// Rendered as a badge on responses the external classifier flagged as a
+// non-substantive holding acknowledgement (US-11) — separate from `tag`,
+// since a holding reply can carry any tag (e.g. NEEDS_MORE_INFO) while still
+// not resolving anything. See app/api/ingest for the isHoldingReply field.
+export const HOLDING_REPLY_CONFIG = {
+  label: 'Holding Reply',
+  icon: PauseCircle,
+  color: 'text-amber-400',
+  bgColor: 'bg-amber-500/10',
+  borderColor: 'border-amber-500/20',
+  description: 'Flagged by the classifier as an acknowledgement-only reply — not a substantive response. Keep this case open.',
+}
+
 export const BUCKET_TAGS: Record<Bucket, Tag[]> = {
   all: [],
   done: ['CONFIRMED_REMOVAL', 'CONFIRMED_NOT_FOUND'],
@@ -251,12 +264,46 @@ export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: Lucid
   complaint_filed: { label: 'Complaint Filed', icon: FileCheck2, color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', barColor: 'bg-emerald-500/45', description: 'A complaint has been filed with the enforcement authority.' },
 }
 
-// The two non-stage events that also appear in a case's history timeline
+// The non-stage events that also appear in a case's history timeline
 // (components/case-tracker/case-detail.tsx) alongside STAGE_ADVANCED entries,
 // which reuse STAGE_CONFIG above directly instead of needing their own labels.
-export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED', { label: string; icon: LucideIcon }> = {
+export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED' | 'AUTO_CREATED' | 'EVIDENCE_CONFIRMED' | 'CASE_CLOSED', { label: string; icon: LucideIcon }> = {
   JURISDICTION_CONFIRMED: { label: 'Jurisdiction confirmed', icon: ShieldCheck },
   AUTHORITY_CONFIRMED: { label: 'Authority confirmed', icon: Gavel },
+  AUTO_CREATED: { label: 'Auto-created from classified email', icon: Sparkles },
+  EVIDENCE_CONFIRMED: { label: 'Evidence item confirmed', icon: FileCheck2 },
+  CASE_CLOSED: { label: 'Case closed', icon: Lock },
+}
+
+// The evidence-completeness checklist (US-19/US-21) — see
+// lib/case-tracker.ts EVIDENCE_ITEMS for the canonical item order and
+// prisma/schema.prisma for the backing `evidence{Item}ConfirmedAt` fields.
+export const EVIDENCE_ITEM_CONFIG: Record<EvidenceItem, { label: string; icon: LucideIcon; description: string }> = {
+  request: {
+    label: 'Original request',
+    icon: FileText,
+    description: 'The original removal request sent to the broker is on file.',
+  },
+  identity: {
+    label: 'Identity verification',
+    icon: UserCheck,
+    description: 'The requester\'s identity was verified per the applicable regime\'s requirements.',
+  },
+  systems: {
+    label: 'Systems confirmation',
+    icon: Database,
+    description: 'The broker confirmed which systems the removal action was taken in.',
+  },
+  reply: {
+    label: 'Broker reply',
+    icon: MessageSquare,
+    description: 'A substantive (non-holding) reply from the broker confirming the action taken is on file.',
+  },
+  retentionException: {
+    label: 'Retention exception',
+    icon: Archive,
+    description: 'Any data the broker is retaining under a legal exception is documented, or explicitly confirmed as none.',
+  },
 }
 
 export const REGIME_LABELS: Record<RegimeCode, string> = {

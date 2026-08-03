@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type Case } from '@/lib/types'
-import { ENFORCEMENT_STAGES, type EnforcementStage } from '@/lib/case-tracker'
+import { ENFORCEMENT_STAGES, type EnforcementStage, type EvidenceItem } from '@/lib/case-tracker'
 import { NavRail } from '../nav-rail'
 import { CaseSidebar } from './case-sidebar'
 import { CaseList } from './case-list'
@@ -91,6 +91,25 @@ export function CaseTracker() {
     return { error: body?.error ?? 'Failed to advance case' }
   }
 
+  async function handleConfirmEvidence(id: string, item: EvidenceItem, note?: string) {
+    const res = await fetch(`/api/cases/${id}/evidence`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item, note }),
+    })
+    if (res.ok) await fetchCases()
+  }
+
+  async function handleCloseCase(id: string) {
+    const res = await fetch(`/api/cases/${id}/close`, { method: 'PATCH' })
+    if (res.ok) {
+      await fetchCases()
+      return {}
+    }
+    const body = await res.json().catch(() => null)
+    return { error: body?.error ?? 'Failed to close case' }
+  }
+
   function handleCreated(created: Case) {
     setNewCaseOpen(false)
     setSelectedId(created.id)
@@ -123,6 +142,8 @@ export function CaseTracker() {
           onConfirmJurisdiction={handleConfirmJurisdiction}
           onConfirmAuthority={handleConfirmAuthority}
           onAdvanceStage={handleAdvanceStage}
+          onConfirmEvidence={handleConfirmEvidence}
+          onCloseCase={handleCloseCase}
         />
       </div>
 

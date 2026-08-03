@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { type Case } from '@/lib/types'
+import { RelatedCasesPanel } from './related-cases-panel'
 
 interface NewCaseDialogProps {
   open: boolean
@@ -115,6 +116,8 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
               onChange={(e) => setRemovalRequestDate(e.target.value)}
             />
           </div>
+
+          <RelatedCasesPanel userCountry={userCountry || null} userState={userState} />
 
           {error && (
             <p data-testid="new-case-error" className="rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">

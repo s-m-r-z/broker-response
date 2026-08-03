@@ -20,6 +20,7 @@ import { type BrokerResponse, type ActionLog, type Case } from '@/lib/types'
 import { TagBadge } from './tag-badge'
 import { StatusBadge } from './status-badge'
 import { AssigneeBadge } from './assignee-badge'
+import { HoldingReplyBadge } from './holding-reply-badge'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
 import { cn, formatDate, formatRelativeTime } from '@/lib/utils'
@@ -75,6 +76,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
             <TagBadge tag={response.tag} />
             <StatusBadge status={response.status} />
             {response.assignedTo && <AssigneeBadge assignedTo={response.assignedTo} />}
+            {response.isHoldingReply && <HoldingReplyBadge />}
           </div>
         </div>
 
