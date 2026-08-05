@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { type Case } from '@/lib/types'
-import { ENFORCEMENT_STAGES, type EnforcementStage, type EvidenceItem } from '@/lib/case-tracker'
+import { ENFORCEMENT_STAGES, type EnforcementStage, type EvidenceItem, CASE_STATUSES, type CaseStatus } from '@/lib/case-tracker'
 import { NavRail } from '../nav-rail'
 import { CaseSidebar } from './case-sidebar'
 import { CaseList } from './case-list'
@@ -16,6 +16,7 @@ export function CaseTracker() {
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [activeStage, setActiveStage] = useState<EnforcementStage | 'all'>('all')
+  const [activeStatus, setActiveStatus] = useState<CaseStatus | 'all'>('all')
   const [search, setSearch] = useState('')
   const [newCaseOpen, setNewCaseOpen] = useState(false)
 
@@ -49,6 +50,7 @@ export function CaseTracker() {
   const selected = cases.find((c) => c.id === selectedId) ?? null
   const filteredCases = cases
     .filter((c) => activeStage === 'all' || c.enforcementStage === activeStage)
+    .filter((c) => activeStatus === 'all' || c.status === activeStatus)
     .filter((c) => {
       if (!search) return true
       const q = search.toLowerCase()
@@ -66,6 +68,11 @@ export function CaseTracker() {
     acc[stage] = cases.filter((c) => c.enforcementStage === stage).length
     return acc
   }, {} as Record<EnforcementStage, number>)
+
+  const statusCounts = CASE_STATUSES.reduce((acc, status) => {
+    acc[status] = cases.filter((c) => c.status === status).length
+    return acc
+  }, {} as Record<CaseStatus, number>)
 
   async function handleConfirmJurisdiction(id: string) {
     const res = await fetch(`/api/cases/${id}/confirm-jurisdiction`, { method: 'PATCH' })
@@ -125,6 +132,9 @@ export function CaseTracker() {
           onStageSelect={setActiveStage}
           counts={stageCounts}
           totalCount={cases.length}
+          activeStatus={activeStatus}
+          onStatusSelect={setActiveStatus}
+          statusCounts={statusCounts}
         />
         <CaseList
           cases={filteredCases}

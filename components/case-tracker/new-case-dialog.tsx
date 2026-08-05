@@ -23,6 +23,8 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
   const [brokerName, setBrokerName] = useState('')
   const [brokerCountry, setBrokerCountry] = useState('')
   const [removalRequestDate, setRemovalRequestDate] = useState('')
+  const [contractFileRef, setContractFileRef] = useState('')
+  const [dataFlowNote, setDataFlowNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -43,6 +45,8 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
     setBrokerName('')
     setBrokerCountry('')
     setRemovalRequestDate('')
+    setContractFileRef('')
+    setDataFlowNote('')
     setError(null)
   }
 
@@ -61,6 +65,8 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
           brokerCountry,
           removalRequestDate: new Date(removalRequestDate).toISOString(),
           sourceResponseId: initialSourceResponseId,
+          contractFileRef: contractFileRef.trim() || undefined,
+          dataFlowNote: dataFlowNote.trim() || undefined,
         }),
       })
       if (!res.ok) {
@@ -115,6 +121,15 @@ export function NewCaseDialog({ open, onClose, onCreated, initialBrokerName, ini
               value={removalRequestDate}
               onChange={(e) => setRemovalRequestDate(e.target.value)}
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <label htmlFor="new-case-contract-file" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Reference document (optional)</label>
+            <Input id="new-case-contract-file" data-testid="new-case-contract-file" value={contractFileRef} onChange={(e) => setContractFileRef(e.target.value)} placeholder="Link or filename, if one exists" />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="new-case-data-flow-note" className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Data flow note (optional)</label>
+            <Input id="new-case-data-flow-note" data-testid="new-case-data-flow-note" value={dataFlowNote} onChange={(e) => setDataFlowNote(e.target.value)} placeholder="Where this data came from / how it flows" />
           </div>
 
           <RelatedCasesPanel userCountry={userCountry || null} userState={userState} />

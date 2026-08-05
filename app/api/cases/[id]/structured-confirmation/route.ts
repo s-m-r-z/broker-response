@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { structuredConfirmationSchema } from '@/lib/case-validation'
 import { assertConfirmable } from '@/lib/case-tracker'
+import { syncCaseStatus } from '@/lib/case-status-sync'
 import { Prisma } from '@prisma/client'
 
 // The structured internal confirmation form (US-18): one submission with
@@ -24,7 +25,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const now = new Date()
-  const data: Prisma.CaseUpdateInput = {}
+  // Submitting the structured confirmation resolves the outstanding
+  // request it was answering (US-07: "Marking a reply as sent updates
+  // status..."), regardless of which individual evidence items were
+  // already confirmed.
+  const data: Prisma.CaseUpdateInput = { confirmationRequestedAt: null }
 
   if (assertConfirmable(kase.evidenceSystemsConfirmedAt, 'Systems confirmation').ok) {
     data.evidenceSystemsConfirmedAt = now
@@ -44,5 +49,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     prisma.caseActionLog.create({ data: { caseId: id, type: 'STRUCTURED_CONFIRMATION', note } }),
   ])
 
-  return NextResponse.json(updated)
+  const status = await syncCaseStatus(id)
+  return NextResponse.json({ ...updated, status: status ?? updated.status })
 }

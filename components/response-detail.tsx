@@ -33,9 +33,10 @@ interface ResponseDetailProps {
   onStatusChange: (status: string) => Promise<void>
   onTrackCase: () => void
   onAssign: () => void
+  onOverrideClassification: () => void
 }
 
-export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase, onAssign }: ResponseDetailProps) {
+export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCase, onAssign, onOverrideClassification }: ResponseDetailProps) {
   const router = useRouter()
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [linkedCase, setLinkedCase] = useState<Case | null>(null)
@@ -193,6 +194,17 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
         >
           <UserPlus className="h-3.5 w-3.5" />
           {response.assignedTo ? 'Reassign' : 'Assign'}
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onOverrideClassification}
+          title="Correct this response's classification tag"
+          data-testid="response-action-override-classification"
+        >
+          <TagIcon className="h-3.5 w-3.5" />
+          Reclassify
         </Button>
       </div>
 

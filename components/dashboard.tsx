@@ -18,6 +18,7 @@ import { ComposeDrawer } from './compose-drawer'
 import { BulkActionBar } from './bulk-action-bar'
 import { NewCaseDialog } from './case-tracker/new-case-dialog'
 import { AssignStakeholderDialog } from './assign-stakeholder-dialog'
+import { OverrideClassificationDialog } from './override-classification-dialog'
 
 export function Dashboard() {
   const searchParams = useSearchParams()
@@ -33,6 +34,7 @@ export function Dashboard() {
   const [composeOpen, setComposeOpen] = useState(false)
   const [trackCaseOpen, setTrackCaseOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
+  const [overrideOpen, setOverrideOpen] = useState(false)
   const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
   const [counts, setCounts] = useState<Counts | null>(null)
 
@@ -162,6 +164,11 @@ export function Dashboard() {
     if (selectedResponse) refreshSelected(selectedResponse.id)
   }
 
+  function handleOverridden() {
+    setOverrideOpen(false)
+    if (selectedResponse) refreshSelected(selectedResponse.id)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-white text-zinc-900 overflow-hidden dark:bg-zinc-950 dark:text-zinc-100">
       <div className="flex flex-1 overflow-hidden">
@@ -198,6 +205,7 @@ export function Dashboard() {
           onStatusChange={handleStatusChange}
           onTrackCase={() => setTrackCaseOpen(true)}
           onAssign={() => setAssignOpen(true)}
+          onOverrideClassification={() => setOverrideOpen(true)}
         />
       </div>
 
@@ -223,6 +231,13 @@ export function Dashboard() {
         onClose={() => setAssignOpen(false)}
         response={selectedResponse}
         onAssigned={handleAssigned}
+      />
+
+      <OverrideClassificationDialog
+        open={overrideOpen}
+        onClose={() => setOverrideOpen(false)}
+        response={selectedResponse}
+        onOverridden={handleOverridden}
       />
 
       {selectedIds.length > 0 && (

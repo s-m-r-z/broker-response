@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { advanceCaseSchema } from '@/lib/case-validation'
 import { canTransitionStage, getNextStage, isEnforcementStage } from '@/lib/case-tracker'
+import { syncCaseStatus } from '@/lib/case-status-sync'
 
 // Advances a case to the next stage in ENFORCEMENT_STAGES order. The client
 // never supplies a target stage — the server always computes it from the
@@ -50,5 +51,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }),
   ])
 
-  return NextResponse.json(updated)
+  const status = await syncCaseStatus(id)
+  return NextResponse.json({ ...updated, status: status ?? updated.status })
 }

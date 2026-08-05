@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { confirmEvidenceSchema } from '@/lib/case-validation'
 import { assertConfirmable, EVIDENCE_ITEM_FIELD, type EvidenceItem } from '@/lib/case-tracker'
 import { EVIDENCE_ITEM_CONFIG } from '@/lib/constants'
+import { syncCaseStatus } from '@/lib/case-status-sync'
 
 // Confirms one evidence-checklist item. Each item is immutable once
 // confirmed (mirrors confirm-jurisdiction/confirm-authority) — see
@@ -38,6 +39,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       data: {
         [field]: new Date(),
         ...(item === 'retentionException' ? { evidenceRetentionNote: note } : {}),
+        // Evidence progress resolves an outstanding confirmation request
+        // (US-07) even if it wasn't submitted through the structured form.
+        confirmationRequestedAt: null,
       },
     }),
     prisma.caseActionLog.create({
@@ -49,5 +53,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }),
   ])
 
-  return NextResponse.json(updated)
+  const status = await syncCaseStatus(id)
+  return NextResponse.json({ ...updated, status: status ?? updated.status })
 }

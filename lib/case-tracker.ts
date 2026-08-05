@@ -158,6 +158,32 @@ export function getMissingEvidenceItems(kase: EvidenceCaseFields): EvidenceItem[
   return EVIDENCE_ITEMS.filter((item) => !kase[EVIDENCE_ITEM_FIELD[item] as keyof EvidenceCaseFields])
 }
 
+// Four-state case status (US-07/US-23) — a separate axis from
+// EnforcementStage (pipeline position). Priority order matters: a closed
+// case is always COMPLETE regardless of anything else; an outstanding
+// confirmation request takes priority over a looming deadline, since it's
+// the more actionable thing to resolve right now.
+export const CASE_STATUSES = ['IN_PROGRESS', 'WAITING_ON_CONFIRMATION', 'DEADLINE_APPROACHING', 'COMPLETE'] as const
+export type CaseStatus = (typeof CASE_STATUSES)[number]
+
+const DEADLINE_APPROACHING_THRESHOLD_DAYS = 5
+
+export interface CaseStatusFields {
+  closedAt: Date | string | null
+  confirmationRequestedAt: Date | string | null
+  responseDeadlineDate: Date | string
+}
+
+/** Pure derivation — callers (lib/case-status-sync.ts) persist and log the transition when this differs from the stored value. */
+export function deriveCaseStatus(kase: CaseStatusFields, now: Date = new Date()): CaseStatus {
+  if (kase.closedAt) return 'COMPLETE'
+  if (kase.confirmationRequestedAt) return 'WAITING_ON_CONFIRMATION'
+  const deadline = new Date(kase.responseDeadlineDate)
+  const daysRemaining = Math.ceil((deadline.getTime() - now.getTime()) / 86_400_000)
+  if (daysRemaining <= DEADLINE_APPROACHING_THRESHOLD_DAYS) return 'DEADLINE_APPROACHING'
+  return 'IN_PROGRESS'
+}
+
 export type CloseCaseResult = { ok: true } | { ok: false; error: string; missing: EvidenceItem[] }
 
 /** Closure is blocked unless every evidence item is confirmed and the case isn't already closed. */

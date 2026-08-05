@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { createCaseSchema } from '@/lib/case-validation'
-import { deriveCaseFields } from '@/lib/case-tracker'
+import { deriveCaseFields, deriveCaseStatus } from '@/lib/case-tracker'
+import { syncCasesStatusBatch } from '@/lib/case-status-sync'
 
 // sourceResponseId filters to cases tracked from a specific broker response —
 // used by response-detail.tsx to check whether a case already exists before
@@ -43,7 +44,7 @@ export async function GET(req: NextRequest) {
       })
       .slice(0, 3)
 
-    return NextResponse.json(matches)
+    return NextResponse.json(await syncCasesStatusBatch(matches))
   }
 
   const cases = await prisma.case.findMany({
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest) {
     orderBy: { responseDeadlineDate: 'asc' },
     include: { actionLogs: { orderBy: { createdAt: 'desc' } } },
   })
-  return NextResponse.json(cases)
+  return NextResponse.json(await syncCasesStatusBatch(cases))
 }
 
 // Creates a case and derives applicableRegime/responseDeadlineDate/filingAuthority/
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body', details: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { userCountry, userState, brokerName, brokerCountry, removalRequestDate, sourceResponseId } = parsed.data
+  const { userCountry, userState, brokerName, brokerCountry, removalRequestDate, sourceResponseId, contractFileRef, dataFlowNote } = parsed.data
 
   const derived = deriveCaseFields({
     userCountry,
@@ -77,6 +78,12 @@ export async function POST(req: NextRequest) {
   if (!derived.mapped) {
     return NextResponse.json({ error: derived.warning }, { status: 422 })
   }
+
+  const initialStatus = deriveCaseStatus({
+    closedAt: null,
+    confirmationRequestedAt: null,
+    responseDeadlineDate: derived.responseDeadlineDate,
+  })
 
   const kase = await prisma.case.create({
     data: {
@@ -91,6 +98,9 @@ export async function POST(req: NextRequest) {
       complaintUrl: derived.complaintUrl,
       maxFine: derived.maxFine,
       sourceResponseId: sourceResponseId ?? null,
+      contractFileRef: contractFileRef ?? null,
+      dataFlowNote: dataFlowNote ?? null,
+      status: initialStatus,
     },
     include: { actionLogs: true },
   })

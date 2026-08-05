@@ -1,6 +1,6 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, Sparkles, FileText, UserCheck, Database, MessageSquare, Archive, Lock, PauseCircle, PenLine, ClipboardCheck, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, Sparkles, FileText, UserCheck, Database, MessageSquare, Archive, Lock, PauseCircle, PenLine, ClipboardCheck, Hourglass, Loader2, Tag as TagIcon, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType, type Stakeholder } from './types'
-import { type EnforcementStage, type EvidenceItem } from './case-tracker'
+import { type EnforcementStage, type EvidenceItem, type CaseStatus } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
 export const BUCKET_CONFIG: Record<Bucket, {
@@ -27,6 +27,7 @@ export const ACTION_LABELS: Record<ActionType, string> = {
   RE_SENT: 'Re-sent request',
   NOTE_ADDED: 'Note added',
   ASSIGNED: 'Assigned',
+  CLASSIFICATION_OVERRIDDEN: 'Classification overridden',
 }
 
 // Monotone by design: this is a history log of what happened, not a current
@@ -38,6 +39,7 @@ export const ACTION_ICON_CONFIG: Record<ActionType, { icon: LucideIcon; color: s
   RE_SENT: { icon: Send, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
   NOTE_ADDED: { icon: StickyNote, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
   ASSIGNED: { icon: UserPlus, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
+  CLASSIFICATION_OVERRIDDEN: { icon: TagIcon, color: 'text-zinc-400', bgColor: 'bg-zinc-500/10' },
 }
 
 // The stakeholders legal counsel can hand a broker response off to for
@@ -267,7 +269,7 @@ export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: Lucid
 // The non-stage events that also appear in a case's history timeline
 // (components/case-tracker/case-detail.tsx) alongside STAGE_ADVANCED entries,
 // which reuse STAGE_CONFIG above directly instead of needing their own labels.
-export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED' | 'AUTO_CREATED' | 'EVIDENCE_CONFIRMED' | 'CASE_CLOSED' | 'DRAFT_APPROVED' | 'STRUCTURED_CONFIRMATION', { label: string; icon: LucideIcon }> = {
+export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED' | 'AUTO_CREATED' | 'EVIDENCE_CONFIRMED' | 'CASE_CLOSED' | 'DRAFT_APPROVED' | 'STRUCTURED_CONFIRMATION' | 'STATUS_CHANGED' | 'CONFIRMATION_REQUESTED', { label: string; icon: LucideIcon }> = {
   JURISDICTION_CONFIRMED: { label: 'Jurisdiction confirmed', icon: ShieldCheck },
   AUTHORITY_CONFIRMED: { label: 'Authority confirmed', icon: Gavel },
   AUTO_CREATED: { label: 'Auto-created from classified email', icon: Sparkles },
@@ -275,6 +277,45 @@ export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CON
   CASE_CLOSED: { label: 'Case closed', icon: Lock },
   DRAFT_APPROVED: { label: 'Draft reply approved for filing', icon: ClipboardCheck },
   STRUCTURED_CONFIRMATION: { label: 'Structured confirmation received', icon: PenLine },
+  STATUS_CHANGED: { label: 'Status changed', icon: RefreshCw },
+  CONFIRMATION_REQUESTED: { label: 'Confirmation requested', icon: Hourglass },
+}
+
+// The four-state status shown alongside enforcementStage (US-07/US-23) — see
+// lib/case-tracker.ts deriveCaseStatus() for how these are computed.
+export const CASE_STATUS_CONFIG: Record<CaseStatus, { label: string; icon: LucideIcon; color: string; bgColor: string; borderColor: string; description: string }> = {
+  IN_PROGRESS: {
+    label: 'In Progress',
+    icon: Loader2,
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/20',
+    description: 'Actively being worked, no outstanding confirmation request and no imminent deadline.',
+  },
+  WAITING_ON_CONFIRMATION: {
+    label: 'Waiting on Confirmation',
+    icon: Hourglass,
+    color: 'text-amber-400',
+    bgColor: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/20',
+    description: 'A structured confirmation request is outstanding — resolves automatically once it\'s submitted.',
+  },
+  DEADLINE_APPROACHING: {
+    label: 'Deadline Approaching',
+    icon: TriangleAlert,
+    color: 'text-red-400',
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/20',
+    description: 'The response deadline is within 5 days (or has passed).',
+  },
+  COMPLETE: {
+    label: 'Complete',
+    icon: CheckCircle2,
+    color: 'text-emerald-400',
+    bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/20',
+    description: 'The case has been closed — the evidence record is locked.',
+  },
 }
 
 // The evidence-completeness checklist (US-19/US-21) — see

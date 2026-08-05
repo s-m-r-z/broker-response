@@ -10,6 +10,7 @@ import { Input } from '../ui/input'
 import { StageBadge } from './stage-badge'
 import { RegimeBadge } from './regime-badge'
 import { DeadlineChip } from './deadline-chip'
+import { CaseStatusBadge } from './case-status-badge'
 
 interface CaseListProps {
   cases: Case[]
@@ -92,6 +93,7 @@ export function CaseList({ cases, loading, selectedId, activeStage, search, onSe
                 {c.userState ? `${c.userState}, ${c.userCountry}` : c.userCountry}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-1">
+                <CaseStatusBadge status={c.status} />
                 <RegimeBadge regime={c.applicableRegime} />
                 <StageBadge stage={c.enforcementStage} />
                 <DeadlineChip deadline={c.responseDeadlineDate} />

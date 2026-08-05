@@ -1,4 +1,4 @@
-import { deriveCaseFields, canTransitionStage, assertConfirmable, getNextStage, ENFORCEMENT_STAGES, assertDraftApprovedForFiling } from './case-tracker'
+import { deriveCaseFields, canTransitionStage, assertConfirmable, getNextStage, ENFORCEMENT_STAGES, assertDraftApprovedForFiling, deriveCaseStatus } from './case-tracker'
 
 describe('deriveCaseFields', () => {
   it('derives GDPR for a German user with a US-based broker (broker country is not an input)', () => {
@@ -143,6 +143,50 @@ describe('assertDraftApprovedForFiling', () => {
   it('allows filing when the current draft exactly matches the approved snapshot', () => {
     const result = assertDraftApprovedForFiling('Approved text.', 'Approved text.')
     expect(result.ok).toBe(true)
+  })
+})
+
+describe('deriveCaseStatus', () => {
+  const now = new Date('2026-06-15T00:00:00.000Z')
+
+  it('returns COMPLETE when closed, regardless of anything else', () => {
+    const status = deriveCaseStatus(
+      { closedAt: new Date(), confirmationRequestedAt: new Date(), responseDeadlineDate: '2026-06-01T00:00:00.000Z' },
+      now
+    )
+    expect(status).toBe('COMPLETE')
+  })
+
+  it('returns WAITING_ON_CONFIRMATION when a request is outstanding and the case is not closed', () => {
+    const status = deriveCaseStatus(
+      { closedAt: null, confirmationRequestedAt: new Date(), responseDeadlineDate: '2026-07-01T00:00:00.000Z' },
+      now
+    )
+    expect(status).toBe('WAITING_ON_CONFIRMATION')
+  })
+
+  it('returns DEADLINE_APPROACHING within the 5-day threshold with no outstanding request', () => {
+    const status = deriveCaseStatus(
+      { closedAt: null, confirmationRequestedAt: null, responseDeadlineDate: '2026-06-18T00:00:00.000Z' },
+      now
+    )
+    expect(status).toBe('DEADLINE_APPROACHING')
+  })
+
+  it('returns DEADLINE_APPROACHING for a deadline already in the past', () => {
+    const status = deriveCaseStatus(
+      { closedAt: null, confirmationRequestedAt: null, responseDeadlineDate: '2026-06-01T00:00:00.000Z' },
+      now
+    )
+    expect(status).toBe('DEADLINE_APPROACHING')
+  })
+
+  it('returns IN_PROGRESS when nothing else applies and the deadline is comfortably out', () => {
+    const status = deriveCaseStatus(
+      { closedAt: null, confirmationRequestedAt: null, responseDeadlineDate: '2026-08-01T00:00:00.000Z' },
+      now
+    )
+    expect(status).toBe('IN_PROGRESS')
   })
 })
 

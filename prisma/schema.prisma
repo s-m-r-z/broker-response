@@ -144,6 +144,21 @@ model Case {
   approvedDraftText      String?
   approvedBy             String?
   approvedAt             DateTime?
+  // Reference context surfaced at intake (US-02) — this app has no contract
+  // model, so contractFileRef is a plain link/filename reference rather than
+  // an actual file relation; case-detail.tsx flags it with a prompt when
+  // absent instead of blocking creation on it.
+  contractFileRef        String?
+  dataFlowNote           String?
+  // Four-state status (US-07/US-23), separate from enforcementStage (which
+  // tracks pipeline position, not case health at a glance). Derived by
+  // lib/case-tracker.ts deriveCaseStatus() and kept in sync by
+  // lib/case-status-sync.ts syncCaseStatus(), called after any mutation that
+  // could change it plus on read for the passive deadline-based transition.
+  // confirmationRequestedAt drives WAITING_ON_CONFIRMATION and is cleared
+  // once a structured confirmation is submitted or any evidence item advances.
+  status                 String    @default("IN_PROGRESS")
+  confirmationRequestedAt DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   actionLogs            CaseActionLog[]

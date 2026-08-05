@@ -29,7 +29,7 @@ export function DeadlineChip({ deadline, className }: DeadlineChipProps) {
     )
   }
 
-  if (daysRemaining <= 7) {
+  if (daysRemaining <= 5) {
     return (
       <span
         className={cn(

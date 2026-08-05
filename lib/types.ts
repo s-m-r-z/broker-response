@@ -1,4 +1,4 @@
-import { type EnforcementStage } from './case-tracker'
+import { type EnforcementStage, type CaseStatus } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
 
 export type CaseActionLogType =
@@ -10,6 +10,8 @@ export type CaseActionLogType =
   | 'CASE_CLOSED'
   | 'DRAFT_APPROVED'
   | 'STRUCTURED_CONFIRMATION'
+  | 'STATUS_CHANGED'
+  | 'CONFIRMATION_REQUESTED'
 
 export type DraftInsertionSource = 'PRIOR_CASE' | 'TEMPLATE'
 
@@ -58,6 +60,10 @@ export interface Case {
   approvedDraftText: string | null
   approvedBy: string | null
   approvedAt: string | null
+  contractFileRef: string | null
+  dataFlowNote: string | null
+  status: CaseStatus
+  confirmationRequestedAt: string | null
   createdAt: string
   updatedAt: string
   actionLogs: CaseActionLog[]
@@ -91,6 +97,7 @@ export type ActionType =
   | 'RE_SENT'
   | 'NOTE_ADDED'
   | 'ASSIGNED'
+  | 'CLASSIFICATION_OVERRIDDEN'
 
 export type Stakeholder = 'PRODUCT_MANAGER' | 'ENGINEERING'
 

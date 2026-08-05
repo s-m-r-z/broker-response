@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Scale, ChevronDown, ChevronRight, ExternalLink } from 'lucide-react'
+import { Scale, ChevronDown, ChevronRight, ExternalLink, TriangleAlert, ShieldCheck } from 'lucide-react'
 import { type LawRegime } from '@/lib/types'
 import { matchesJurisdiction } from '@/lib/jurisdiction-map'
+import { formatRelativeTime } from '@/lib/utils'
 import { ClauseCategoryBadge } from './clause-category-badge'
 import { Button } from '../ui/button'
+import { InfoTooltip } from '../info-tooltip'
 
 interface RelevantLawPanelProps {
   jurisdiction: string | null
@@ -52,6 +54,9 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
                   <span className="font-normal text-xs text-zinc-400">
                     {regime.state ? `${regime.state}, ${regime.country}` : regime.country}
                   </span>
+                  <span className="font-normal text-[11px] text-zinc-400" data-testid={`relevant-law-last-checked-${regime.id}`}>
+                    {regime.lastCheckedAt ? `· last verified ${formatRelativeTime(regime.lastCheckedAt)}` : '· never verified'}
+                  </span>
                 </button>
                 <button
                   onClick={() => router.push(`/legal-workbook?open=${regime.id}`)}
@@ -65,27 +70,48 @@ export function RelevantLawPanel({ jurisdiction, onInsertCitation }: RelevantLaw
               </div>
               {isOpen && (
                 <div className="space-y-2 border-t border-zinc-200 px-3 py-2 dark:border-zinc-800">
-                  {regime.clauses.map((clause) => (
-                    <div key={clause.id} className="rounded-md bg-zinc-50 p-2.5 dark:bg-zinc-900">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="mb-1">
-                            <ClauseCategoryBadge category={clause.category} />
+                  {regime.clauses.map((clause) => {
+                    const hasPendingChange = clause.pendingChanges.some((c) => c.status === 'PENDING')
+                    return (
+                      <div key={clause.id} className="rounded-md bg-zinc-50 p-2.5 dark:bg-zinc-900">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="mb-1 flex items-center gap-1.5">
+                              <ClauseCategoryBadge category={clause.category} />
+                              {clause.verified ? (
+                                <InfoTooltip content="This clause's text has been human-verified against the official source.">
+                                  <span className="flex items-center gap-0.5 text-[10px] text-emerald-500">
+                                    <ShieldCheck className="h-3 w-3" /> Verified
+                                  </span>
+                                </InfoTooltip>
+                              ) : (
+                                <InfoTooltip content="This clause hasn't been human-verified yet — confirm it's current before relying on it.">
+                                  <span className="flex items-center gap-0.5 text-[10px] text-zinc-400">Unverified</span>
+                                </InfoTooltip>
+                              )}
+                              {hasPendingChange && (
+                                <InfoTooltip content="A recheck found a possible change to this provision — review before citing it in a reply.">
+                                  <span className="flex items-center gap-0.5 text-[10px] text-amber-500" data-testid={`relevant-law-pending-change-${clause.id}`}>
+                                    <TriangleAlert className="h-3 w-3" /> Change pending review
+                                  </span>
+                                </InfoTooltip>
+                              )}
+                            </div>
+                            <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{clause.title}</p>
+                            <p className="text-[11px] text-zinc-500">{clause.citation}</p>
                           </div>
-                          <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{clause.title}</p>
-                          <p className="text-[11px] text-zinc-500">{clause.citation}</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onInsertCitation(`Per ${clause.citation}: ${clause.text}`)}
+                            data-testid={`relevant-law-insert-${clause.id}`}
+                          >
+                            Insert
+                          </Button>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => onInsertCitation(`Per ${clause.citation}: ${clause.text}`)}
-                          data-testid={`relevant-law-insert-${clause.id}`}
-                        >
-                          Insert
-                        </Button>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>

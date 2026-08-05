@@ -2,7 +2,7 @@
 // looser, pre-existing app/api/actions/route.ts (untyped body, no schema).
 
 import { z } from 'zod'
-import { STAKEHOLDER_CONFIG } from './constants'
+import { STAKEHOLDER_CONFIG, TAG_CONFIG } from './constants'
 
 const STAKEHOLDER_VALUES = Object.keys(STAKEHOLDER_CONFIG) as [string, ...string[]]
 
@@ -14,6 +14,22 @@ export const assignStakeholderSchema = z
   .strict()
 
 export type AssignStakeholderInput = z.infer<typeof assignStakeholderSchema>
+
+// Manual classification override (US-09) — this app never runs
+// classification itself (see CLAUDE.md), so this is purely a human
+// correction of what the external pipeline assigned; the override is
+// logged (ActionLog type CLASSIFICATION_OVERRIDDEN) as a signal available
+// to that external pipeline, not something this app retrains on itself.
+const TAG_VALUES = Object.keys(TAG_CONFIG) as [string, ...string[]]
+
+export const overrideTagSchema = z
+  .object({
+    tag: z.enum(TAG_VALUES),
+    note: z.string().min(1).optional(),
+  })
+  .strict()
+
+export type OverrideTagInput = z.infer<typeof overrideTagSchema>
 
 // /api/ingest is external-facing (pushed by the classification pipeline —
 // see CLAUDE.md), so this is intentionally NOT .strict(): unknown fields

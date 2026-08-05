@@ -18,6 +18,10 @@ export const createCaseSchema = z
     brokerCountry: z.string().min(1),
     removalRequestDate: z.string().datetime({ message: 'removalRequestDate must be ISO 8601 UTC' }),
     sourceResponseId: z.string().min(1).optional(),
+    // Reference context (US-02) — optional; case-detail.tsx flags a missing
+    // contractFileRef with a prompt rather than blocking creation on it.
+    contractFileRef: z.string().min(1).optional(),
+    dataFlowNote: z.string().min(1).optional(),
   })
   .strict()
 
