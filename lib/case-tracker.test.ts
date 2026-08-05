@@ -1,4 +1,4 @@
-import { deriveCaseFields, canTransitionStage, assertConfirmable, getNextStage, ENFORCEMENT_STAGES } from './case-tracker'
+import { deriveCaseFields, canTransitionStage, assertConfirmable, getNextStage, ENFORCEMENT_STAGES, assertDraftApprovedForFiling } from './case-tracker'
 
 describe('deriveCaseFields', () => {
   it('derives GDPR for a German user with a US-based broker (broker country is not an input)', () => {
@@ -70,12 +70,24 @@ describe('canTransitionStage', () => {
     expect(result.ok).toBe(false)
   })
 
-  it('allows complaint_filed once authority is confirmed', () => {
+  it('blocks complaint_filed when authority is confirmed but the draft is not approved', () => {
     const result = canTransitionStage({
       currentStage: 'complaint_eligible',
       targetStage: 'complaint_filed',
       jurisdictionConfirmedAt: new Date(),
       authorityConfirmedAt: new Date(),
+    })
+    expect(result.ok).toBe(false)
+  })
+
+  it('allows complaint_filed once authority is confirmed and the current draft is approved', () => {
+    const result = canTransitionStage({
+      currentStage: 'complaint_eligible',
+      targetStage: 'complaint_filed',
+      jurisdictionConfirmedAt: new Date(),
+      authorityConfirmedAt: new Date(),
+      draftReply: 'Final approved text.',
+      approvedDraftText: 'Final approved text.',
     })
     expect(result.ok).toBe(true)
   })
@@ -115,6 +127,22 @@ describe('canTransitionStage', () => {
       authorityConfirmedAt: null,
     })
     expect(result.ok).toBe(false)
+  })
+})
+
+describe('assertDraftApprovedForFiling', () => {
+  it('blocks when nothing has been approved yet', () => {
+    expect(assertDraftApprovedForFiling('Some draft text.', null).ok).toBe(false)
+  })
+
+  it('blocks when the draft has changed since approval', () => {
+    const result = assertDraftApprovedForFiling('Edited after approval.', 'Original approved text.')
+    expect(result.ok).toBe(false)
+  })
+
+  it('allows filing when the current draft exactly matches the approved snapshot', () => {
+    const result = assertDraftApprovedForFiling('Approved text.', 'Approved text.')
+    expect(result.ok).toBe(true)
   })
 })
 

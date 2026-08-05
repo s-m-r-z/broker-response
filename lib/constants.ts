@@ -1,4 +1,4 @@
-import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, Sparkles, FileText, UserCheck, Database, MessageSquare, Archive, Lock, PauseCircle, type LucideIcon } from 'lucide-react'
+import { Inbox, CheckCircle2, AlertCircle, XCircle, Clock, HelpCircle, Mail, Scale, Send, StickyNote, TriangleAlert, RefreshCw, ShieldCheck, FileCheck2, Gavel, Briefcase, Wrench, UserPlus, Sparkles, FileText, UserCheck, Database, MessageSquare, Archive, Lock, PauseCircle, PenLine, ClipboardCheck, type LucideIcon } from 'lucide-react'
 import { type Tag, type Bucket, type Status, type ActionType, type Stakeholder } from './types'
 import { type EnforcementStage, type EvidenceItem } from './case-tracker'
 import { type RegimeCode } from './jurisdiction-map'
@@ -267,12 +267,14 @@ export const STAGE_CONFIG: Record<EnforcementStage, { label: string; icon: Lucid
 // The non-stage events that also appear in a case's history timeline
 // (components/case-tracker/case-detail.tsx) alongside STAGE_ADVANCED entries,
 // which reuse STAGE_CONFIG above directly instead of needing their own labels.
-export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED' | 'AUTO_CREATED' | 'EVIDENCE_CONFIRMED' | 'CASE_CLOSED', { label: string; icon: LucideIcon }> = {
+export const CASE_EVENT_CONFIG: Record<'JURISDICTION_CONFIRMED' | 'AUTHORITY_CONFIRMED' | 'AUTO_CREATED' | 'EVIDENCE_CONFIRMED' | 'CASE_CLOSED' | 'DRAFT_APPROVED' | 'STRUCTURED_CONFIRMATION', { label: string; icon: LucideIcon }> = {
   JURISDICTION_CONFIRMED: { label: 'Jurisdiction confirmed', icon: ShieldCheck },
   AUTHORITY_CONFIRMED: { label: 'Authority confirmed', icon: Gavel },
   AUTO_CREATED: { label: 'Auto-created from classified email', icon: Sparkles },
   EVIDENCE_CONFIRMED: { label: 'Evidence item confirmed', icon: FileCheck2 },
   CASE_CLOSED: { label: 'Case closed', icon: Lock },
+  DRAFT_APPROVED: { label: 'Draft reply approved for filing', icon: ClipboardCheck },
+  STRUCTURED_CONFIRMATION: { label: 'Structured confirmation received', icon: PenLine },
 }
 
 // The evidence-completeness checklist (US-19/US-21) — see

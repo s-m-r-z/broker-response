@@ -144,6 +144,7 @@ export function CaseTracker() {
           onAdvanceStage={handleAdvanceStage}
           onConfirmEvidence={handleConfirmEvidence}
           onCloseCase={handleCloseCase}
+          onRefresh={fetchCases}
         />
       </div>
 

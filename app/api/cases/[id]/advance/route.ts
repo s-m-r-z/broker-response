@@ -36,6 +36,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     targetStage: nextStage,
     jurisdictionConfirmedAt: kase.jurisdictionConfirmedAt,
     authorityConfirmedAt: kase.authorityConfirmedAt,
+    draftReply: kase.draftReply,
+    approvedDraftText: kase.approvedDraftText,
   })
   if (!check.ok) {
     return NextResponse.json({ error: check.error }, { status: 409 })

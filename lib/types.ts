@@ -8,6 +8,18 @@ export type CaseActionLogType =
   | 'AUTO_CREATED'
   | 'EVIDENCE_CONFIRMED'
   | 'CASE_CLOSED'
+  | 'DRAFT_APPROVED'
+  | 'STRUCTURED_CONFIRMATION'
+
+export type DraftInsertionSource = 'PRIOR_CASE' | 'TEMPLATE'
+
+export interface DraftInsertion {
+  id: string
+  source: DraftInsertionSource
+  label: string
+  sourceCaseId?: string
+  text: string
+}
 
 export interface CaseActionLog {
   id: string
@@ -41,6 +53,11 @@ export interface Case {
   evidenceRetentionConfirmedAt: string | null
   evidenceRetentionNote: string | null
   closedAt: string | null
+  draftReply: string | null
+  draftInsertions: string | null
+  approvedDraftText: string | null
+  approvedBy: string | null
+  approvedAt: string | null
   createdAt: string
   updatedAt: string
   actionLogs: CaseActionLog[]

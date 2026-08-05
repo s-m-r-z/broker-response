@@ -59,6 +59,8 @@ export function EnforcementActions({ kase, onAdvance, insertCitation }: Enforcem
     targetStage: nextStage,
     jurisdictionConfirmedAt: kase.jurisdictionConfirmedAt ? new Date(kase.jurisdictionConfirmedAt) : null,
     authorityConfirmedAt: kase.authorityConfirmedAt ? new Date(kase.authorityConfirmedAt) : null,
+    draftReply: kase.draftReply,
+    approvedDraftText: kase.approvedDraftText,
   })
 
   async function handleAdvance() {

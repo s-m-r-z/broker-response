@@ -128,6 +128,22 @@ model Case {
   // confirmed — see lib/case-tracker.ts assertCanClose(). Independent of
   // enforcementStage, which tracks the enforcement pipeline, not closure.
   closedAt               DateTime?
+  // Draft reply workflow (US-13/US-15/US-20/US-25). draftReply is the
+  // editable text; draftInsertions is a JSON-encoded array of
+  // { id, source, label, sourceCaseId?, text } logging which blocks came
+  // from a snippet insertion and where from (see lib/draft-tracker.ts) — an
+  // approximation of "source per sentence" scoped to what the UI actually
+  // controls (inserts), since there's no real drafting/parsing engine here.
+  // approvedDraftText is a snapshot, not a flag: filing (complaint_filed)
+  // requires it to exist AND equal the current draftReply — see
+  // lib/case-tracker.ts assertDraftApprovedForFiling(). Unlike
+  // jurisdictionConfirmedAt/authorityConfirmedAt, this is NOT immutable —
+  // editing the draft after approval is expected to require re-approval.
+  draftReply             String?
+  draftInsertions        String?
+  approvedDraftText      String?
+  approvedBy             String?
+  approvedAt             DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   actionLogs            CaseActionLog[]

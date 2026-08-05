@@ -14,6 +14,8 @@ import { DeadlineChip } from './deadline-chip'
 import { EnforcementActions } from './enforcement-actions'
 import { EvidenceChecklist } from './evidence-checklist'
 import { RelatedCasesPanel } from './related-cases-panel'
+import { DraftReplyPanel } from './draft-reply-panel'
+import { StructuredConfirmationDialog } from './structured-confirmation-dialog'
 import { RelevantLawPanel } from '../legal-workbook/relevant-law-panel'
 
 interface CaseDetailProps {
@@ -23,12 +25,14 @@ interface CaseDetailProps {
   onAdvanceStage: (id: string, note?: string) => Promise<{ error?: string } | void>
   onConfirmEvidence: (id: string, item: EvidenceItem, note?: string) => Promise<void>
   onCloseCase: (id: string) => Promise<{ error?: string } | void>
+  onRefresh: () => Promise<void>
 }
 
-export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, onAdvanceStage, onConfirmEvidence, onCloseCase }: CaseDetailProps) {
+export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, onAdvanceStage, onConfirmEvidence, onCloseCase, onRefresh }: CaseDetailProps) {
   const router = useRouter()
   const [confirming, setConfirming] = useState<'jurisdiction' | 'authority' | null>(null)
   const [insertCitation, setInsertCitation] = useState<{ text: string; nonce: number } | null>(null)
+  const [structuredConfirmationOpen, setStructuredConfirmationOpen] = useState(false)
 
   if (!kase) {
     return (
@@ -176,6 +180,13 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
           onInsertCitation={(text) => setInsertCitation({ text, nonce: Date.now() })}
         />
 
+        <DraftReplyPanel
+          key={kase.id}
+          kase={kase}
+          onSaved={onRefresh}
+          onOpenStructuredConfirmation={() => setStructuredConfirmationOpen(true)}
+        />
+
         {/* Enforcement actions */}
         <EnforcementActions kase={kase} onAdvance={onAdvanceStage} insertCitation={insertCitation} />
 
@@ -234,6 +245,16 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
           </div>
         )}
       </div>
+
+      <StructuredConfirmationDialog
+        open={structuredConfirmationOpen}
+        onClose={() => setStructuredConfirmationOpen(false)}
+        caseId={kase.id}
+        onConfirmed={async () => {
+          setStructuredConfirmationOpen(false)
+          await onRefresh()
+        }}
+      />
     </div>
   )
 }

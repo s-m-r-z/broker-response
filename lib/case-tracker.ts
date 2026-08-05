@@ -68,6 +68,8 @@ export interface StageTransitionCheckInput {
   targetStage: EnforcementStage
   jurisdictionConfirmedAt: Date | null
   authorityConfirmedAt: Date | null
+  draftReply?: string | null
+  approvedDraftText?: string | null
 }
 
 export type StageTransitionResult = { ok: true } | { ok: false; error: string }
@@ -87,6 +89,31 @@ export function canTransitionStage(input: StageTransitionCheckInput): StageTrans
   }
   if (input.targetStage === 'complaint_filed' && !input.authorityConfirmedAt) {
     return { ok: false, error: 'Case cannot reach complaint_filed without authority confirmed.' }
+  }
+  if (input.targetStage === 'complaint_filed') {
+    const draftCheck = assertDraftApprovedForFiling(input.draftReply ?? null, input.approvedDraftText ?? null)
+    if (!draftCheck.ok) return draftCheck
+  }
+  return { ok: true }
+}
+
+/**
+ * Filing (complaint_filed) requires a draft that has been explicitly
+ * approved by a reviewer, and the approved snapshot must still match the
+ * current draft text — editing after approval invalidates it and requires
+ * re-approval (US-25). Unlike the evidence checklist's one-time
+ * confirmations, approval can be re-granted any number of times; what's
+ * enforced is that the *current* text was the *last* thing approved.
+ */
+export function assertDraftApprovedForFiling(
+  draftReply: string | null,
+  approvedDraftText: string | null
+): StageTransitionResult {
+  if (!approvedDraftText) {
+    return { ok: false, error: 'Cannot file complaint — the draft reply has not been approved by a reviewer yet.' }
+  }
+  if (approvedDraftText !== (draftReply ?? '')) {
+    return { ok: false, error: 'Cannot file complaint — the draft reply has changed since it was approved. Re-approve the current draft first.' }
   }
   return { ok: true }
 }

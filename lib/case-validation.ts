@@ -47,3 +47,52 @@ export const confirmEvidenceSchema = z
   })
 
 export type ConfirmEvidenceInput = z.infer<typeof confirmEvidenceSchema>
+
+// Saves the case's draft reply text and the provenance log of what was
+// inserted from where (US-13/US-20). Freely editable — not gated by
+// assertConfirmable like the evidence items, since a draft is expected to
+// be revised repeatedly before approval.
+export const saveDraftSchema = z
+  .object({
+    draftReply: z.string(),
+    draftInsertions: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          source: z.enum(['PRIOR_CASE', 'TEMPLATE']),
+          label: z.string().min(1),
+          sourceCaseId: z.string().min(1).optional(),
+          text: z.string(),
+        })
+      )
+      .optional(),
+  })
+  .strict()
+
+export type SaveDraftInput = z.infer<typeof saveDraftSchema>
+
+// Approves the *current* draft text for filing (US-25). Not immutable like
+// jurisdiction/authority confirmation — re-approving after an edit is the
+// expected flow, so this can be called any number of times.
+export const approveDraftSchema = z
+  .object({
+    reviewerName: z.string().min(1),
+  })
+  .strict()
+
+export type ApproveDraftInput = z.infer<typeof approveDraftSchema>
+
+// The structured internal confirmation form (US-18) — all four fields plus
+// the responder's name are required; an incomplete submission is rejected
+// outright rather than partially saved.
+export const structuredConfirmationSchema = z
+  .object({
+    systemName: z.string().min(1),
+    actionTaken: z.string().min(1),
+    date: z.string().min(1),
+    retentionException: z.string().min(1),
+    responderName: z.string().min(1),
+  })
+  .strict()
+
+export type StructuredConfirmationInput = z.infer<typeof structuredConfirmationSchema>

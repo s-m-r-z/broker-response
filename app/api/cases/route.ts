@@ -19,6 +19,10 @@ export async function GET(req: NextRequest) {
   const jurisdictionCountry = req.nextUrl.searchParams.get('jurisdictionCountry')
   const jurisdictionState = req.nextUrl.searchParams.get('jurisdictionState')
   const excludeId = req.nextUrl.searchParams.get('excludeId')
+  // Narrows jurisdiction matches to cases with a non-empty draftReply — used
+  // by draft-reply-panel.tsx's snippet library (US-13), which needs actual
+  // precedent text to offer, not just a jurisdiction match.
+  const hasDraft = req.nextUrl.searchParams.get('hasDraft') === 'true'
 
   if (jurisdictionCountry) {
     const country = jurisdictionCountry.trim().toLowerCase()
@@ -34,7 +38,8 @@ export async function GET(req: NextRequest) {
       .filter((c) => {
         const cCountry = c.userCountry.trim().toLowerCase()
         const cState = c.userState?.trim().toLowerCase() || null
-        return cCountry === country && (!state || !cState || state === cState)
+        const jurisdictionMatches = cCountry === country && (!state || !cState || state === cState)
+        return jurisdictionMatches && (!hasDraft || !!c.draftReply?.trim())
       })
       .slice(0, 3)
 
