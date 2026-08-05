@@ -1,19 +1,21 @@
 'use client'
 
-import { type Bucket, type Tag } from '@/lib/types'
-import { TAG_CONFIG, BUCKET_CONFIG } from '@/lib/constants'
+import { type Bucket, type Tag, type Stakeholder } from '@/lib/types'
+import { TAG_CONFIG, BUCKET_CONFIG, STAKEHOLDER_CONFIG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { InfoTooltip } from './info-tooltip'
 
 interface SidebarProps {
   activeBucket: Bucket
   activeTag: Tag | null
+  activeAssignee: Stakeholder | null
   onBucketSelect: (bucket: Bucket) => void
   onTagSelect: (tag: Tag | null) => void
-  counts: { byTag: Record<Tag, number>; byBucket: Record<Bucket, number> } | null
+  onAssigneeSelect: (assignee: Stakeholder | null) => void
+  counts: { byTag: Record<Tag, number>; byBucket: Record<Bucket, number>; byAssignee: Record<Stakeholder, number> } | null
 }
 
-export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect, counts }: SidebarProps) {
+export function Sidebar({ activeBucket, activeTag, activeAssignee, onBucketSelect, onTagSelect, onAssigneeSelect, counts }: SidebarProps) {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
       <div className="px-4 py-5 border-b border-zinc-200 dark:border-zinc-800">
@@ -77,6 +79,41 @@ export function Sidebar({ activeBucket, activeTag, onBucketSelect, onTagSelect, 
                 {counts && (counts.byTag[tag] ?? 0) > 0 && (
                   <span className="text-[10px] font-medium tabular-nums text-zinc-400 dark:text-zinc-600">
                     {counts.byTag[tag].toLocaleString()}
+                  </span>
+                )}
+              </button>
+            </InfoTooltip>
+          )
+        })}
+
+        {/* Assignee filter — independent of bucket/tag, so it combines with
+            whichever is active rather than replacing it (unlike tags, which
+            share a dimension with buckets). Toggles off on re-click since
+            there's no "All" row to fall back to here. */}
+        <p className="mb-1 mt-4 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
+          Assigned To
+        </p>
+        {(Object.keys(STAKEHOLDER_CONFIG) as Stakeholder[]).map((stakeholder) => {
+          const config = STAKEHOLDER_CONFIG[stakeholder]
+          const Icon = config.icon
+          const isActive = activeAssignee === stakeholder
+          return (
+            <InfoTooltip key={stakeholder} content={config.description}>
+              <button
+                onClick={() => onAssigneeSelect(isActive ? null : stakeholder)}
+                data-testid={`sidebar-assignee-${stakeholder}`}
+                className={cn(
+                  'flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors',
+                  isActive
+                    ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
+                    : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200'
+                )}
+              >
+                <Icon className={cn('h-4 w-4', isActive ? config.color : '')} />
+                <span className="flex-1 text-left">{config.label}</span>
+                {counts && (counts.byAssignee[stakeholder] ?? 0) > 0 && (
+                  <span className="text-[10px] font-medium tabular-nums text-zinc-400 dark:text-zinc-600">
+                    {counts.byAssignee[stakeholder].toLocaleString()}
                   </span>
                 )}
               </button>

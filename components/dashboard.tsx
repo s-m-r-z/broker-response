@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { type BrokerResponse, type Bucket, type Tag, type Case } from '@/lib/types'
+import { type BrokerResponse, type Bucket, type Tag, type Case, type Stakeholder } from '@/lib/types'
 import { BUCKET_TAGS, BUCKET_CONFIG, TAG_CONFIG } from '@/lib/constants'
 
 interface Counts {
   byTag: Record<Tag, number>
   byBucket: Record<Bucket, number>
+  byAssignee: Record<Stakeholder, number>
 }
 import { NavRail } from './nav-rail'
 import { Sidebar } from './sidebar'
@@ -25,6 +26,7 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [activeBucket, setActiveBucket] = useState<Bucket>('all')
   const [activeTag, setActiveTag] = useState<Tag | null>(null)
+  const [activeAssignee, setActiveAssignee] = useState<Stakeholder | null>(null)
   const [search, setSearch] = useState('')
   const [selectedResponse, setSelectedResponse] = useState<BrokerResponse | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -49,12 +51,13 @@ export function Dashboard() {
       if (tags.length) params.set('tags', tags.join(','))
     }
     if (search) params.set('search', search)
+    if (activeAssignee) params.set('assignedTo', activeAssignee)
 
     const res = await fetch(`/api/responses?${params}`)
     const data = await res.json()
     setResponses(data.data ?? [])
     setLoading(false)
-  }, [activeBucket, activeTag, search])
+  }, [activeBucket, activeTag, activeAssignee, search])
 
   useEffect(() => {
     fetchResponses()
@@ -166,8 +169,10 @@ export function Dashboard() {
         <Sidebar
           activeBucket={activeBucket}
           activeTag={activeTag}
+          activeAssignee={activeAssignee}
           onBucketSelect={setActiveBucket}
           onTagSelect={setActiveTag}
+          onAssigneeSelect={setActiveAssignee}
           counts={counts}
         />
 
@@ -179,6 +184,7 @@ export function Dashboard() {
           search={search}
           activeBucket={activeBucket}
           activeTag={activeTag}
+          activeAssignee={activeAssignee}
           onSelect={handleSelect}
           onToggleCheck={handleToggleCheck}
           onToggleAll={handleToggleAll}

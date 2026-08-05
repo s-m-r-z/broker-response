@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   const tag = searchParams.get('tag')
   const tags = searchParams.get('tags')
   const search = searchParams.get('search')
+  const assignedTo = searchParams.get('assignedTo')
   const page = Number(searchParams.get('page') ?? 1)
   const pageSize = Number(searchParams.get('pageSize') ?? 50)
 
@@ -15,6 +16,10 @@ export async function GET(req: NextRequest) {
     where.tag = tag
   } else if (tags) {
     where.tag = { in: tags.split(',') }
+  }
+
+  if (assignedTo) {
+    where.assignedTo = assignedTo
   }
 
   if (search) {

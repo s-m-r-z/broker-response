@@ -1,8 +1,8 @@
 'use client'
 
 import { Search, RefreshCw } from 'lucide-react'
-import { type BrokerResponse, type Bucket, type Tag } from '@/lib/types'
-import { BUCKET_TAGS } from '@/lib/constants'
+import { type BrokerResponse, type Bucket, type Tag, type Stakeholder } from '@/lib/types'
+import { BUCKET_TAGS, STAKEHOLDER_CONFIG } from '@/lib/constants'
 import { TagBadge } from './tag-badge'
 import { StatusBadge } from './status-badge'
 import { AssigneeBadge } from './assignee-badge'
@@ -19,6 +19,7 @@ interface ResponseListProps {
   search: string
   activeBucket: Bucket
   activeTag: Tag | null
+  activeAssignee: Stakeholder | null
   onSelect: (response: BrokerResponse) => void
   onToggleCheck: (id: string) => void
   onToggleAll: () => void
@@ -34,6 +35,7 @@ export function ResponseList({
   search,
   activeBucket,
   activeTag,
+  activeAssignee,
   onSelect,
   onToggleCheck,
   onToggleAll,
@@ -54,7 +56,9 @@ export function ResponseList({
                 ? `${responses.length} responses`
                 : 'No responses'
               : activeBucket === 'all'
-              ? 'All Responses'
+              ? activeAssignee
+                ? `Assigned to ${STAKEHOLDER_CONFIG[activeAssignee].label}`
+                : 'All Responses'
               : activeBucket.replace('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
           </p>
           <button
