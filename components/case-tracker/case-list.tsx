@@ -93,7 +93,8 @@ export function CaseList({ cases, loading, selectedId, activeStage, search, onSe
                 {c.userState ? `${c.userState}, ${c.userCountry}` : c.userCountry}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-1">
-                <CaseStatusBadge status={c.status} />
+                {/* See case-detail.tsx for why DEADLINE_APPROACHING is suppressed here — DeadlineChip already covers it, more precisely. */}
+                {c.status !== 'DEADLINE_APPROACHING' && <CaseStatusBadge status={c.status} />}
                 <RegimeBadge regime={c.applicableRegime} />
                 <StageBadge stage={c.enforcementStage} />
                 <DeadlineChip deadline={c.responseDeadlineDate} />

@@ -115,8 +115,11 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="border-b border-zinc-200 px-6 py-3 flex flex-wrap items-center gap-2 dark:border-zinc-800">
+      {/* Actions — status-changing actions and meta actions (assign/reclassify)
+          are visually grouped separately so the row reads as two clusters
+          rather than one undifferentiated overflow (design audit finding #4). */}
+      <div className="border-b border-zinc-200 px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 dark:border-zinc-800">
+      <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={() => onCompose()} data-testid="response-action-email">
           <Mail className="h-3.5 w-3.5" />
           Email Broker
@@ -184,7 +187,9 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
             Track as Case
           </Button>
         )}
+      </div>
 
+      <div className="flex flex-wrap items-center gap-2 border-l border-zinc-200 pl-4 dark:border-zinc-800">
         <Button
           size="sm"
           variant="outline"
@@ -206,6 +211,7 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
           <TagIcon className="h-3.5 w-3.5" />
           Reclassify
         </Button>
+      </div>
       </div>
 
       {/* Response content + action history */}

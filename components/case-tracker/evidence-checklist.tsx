@@ -71,6 +71,12 @@ export function EvidenceChecklist({ kase, onConfirmItem, onClose }: EvidenceChec
                     {item === 'retentionException' && kase.evidenceRetentionNote && (
                       <p className="mt-1 text-[11px] text-zinc-600 dark:text-zinc-400">"{kase.evidenceRetentionNote}"</p>
                     )}
+                    {/* This row needs a value, not just a click, so it's called out —
+                        otherwise the extra input field reads as a layout glitch next
+                        to the four button-only rows (design audit finding #7). */}
+                    {item === 'retentionException' && !confirmedAt && (
+                      <p className="mt-1 text-[11px] italic text-zinc-400 dark:text-zinc-500">Requires a note to confirm →</p>
+                    )}
                   </div>
                 </div>
 

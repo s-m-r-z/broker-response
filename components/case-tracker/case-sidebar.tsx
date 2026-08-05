@@ -76,9 +76,11 @@ export function CaseSidebar({ activeStage, onStageSelect, counts, totalCount, ac
         })}
 
         {/* Four-state status filter (US-23) — independent of the stage
-            filter above, so it combines with it rather than replacing it. */}
-        <p className="mb-1 mt-4 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
-          Status
+            filter above, so it combines with it rather than replacing it.
+            Border + extra spacing makes that two-dimension distinction
+            visible, not just implied by the label (design audit finding #5). */}
+        <p className="mb-1 mt-5 border-t border-zinc-200 px-2 pt-4 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:border-zinc-800 dark:text-zinc-600">
+          Status <span className="normal-case font-normal text-zinc-400 dark:text-zinc-600">(combines with Stage)</span>
         </p>
         <button
           onClick={() => onStatusSelect('all')}

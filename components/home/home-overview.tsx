@@ -101,7 +101,7 @@ export function HomeOverview() {
               onClick={() => router.push('/responses?bucket=denied')}
             />
             <ProgressStatCard
-              label="Cases Confirmed"
+              label="Jurisdiction & Authority Confirmed"
               current={confirmedCases}
               total={cases.length}
               icon={Gavel}

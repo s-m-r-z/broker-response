@@ -17,6 +17,7 @@ import { RelatedCasesPanel } from './related-cases-panel'
 import { DraftReplyPanel } from './draft-reply-panel'
 import { StructuredConfirmationDialog } from './structured-confirmation-dialog'
 import { CaseStatusBadge } from './case-status-badge'
+import { CollapsibleSection } from './collapsible-section'
 import { RelevantLawPanel } from '../legal-workbook/relevant-law-panel'
 
 interface CaseDetailProps {
@@ -77,7 +78,11 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <CaseStatusBadge status={kase.status} />
+            {/* DeadlineChip already carries the exact days remaining/overdue —
+                showing the status badge too when it's just restating "late"
+                is redundant noise. The badge earns its place for the other
+                three states, which DeadlineChip can't express. */}
+            {kase.status !== 'DEADLINE_APPROACHING' && <CaseStatusBadge status={kase.status} />}
             <DeadlineChip deadline={kase.responseDeadlineDate} />
             <RegimeBadge regime={kase.applicableRegime} />
           </div>
@@ -226,11 +231,8 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
         {/* Enforcement actions */}
         <EnforcementActions kase={kase} onAdvance={onAdvanceStage} insertCitation={insertCitation} />
 
-        {/* Complaint pack */}
-        <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
-            Complaint Pack
-          </p>
+        {/* Complaint pack — reference info, checked rarely once filing authority is confirmed, so collapsed by default (see design audit finding #3). */}
+        <CollapsibleSection title="Complaint Pack" testId="case-complaint-pack-toggle">
           <dl className="space-y-2 text-sm">
             <div className="flex items-center justify-between gap-2">
               <dt className="text-zinc-500">Filing authority</dt>
@@ -260,7 +262,7 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
               Confirm jurisdiction and authority above before filing this complaint.
             </p>
           )}
-        </div>
+        </CollapsibleSection>
 
         <EvidenceChecklist
           kase={kase}
@@ -268,17 +270,19 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
           onClose={() => onCloseCase(kase.id)}
         />
 
+        {/* Case History — the audit trail, checked less often than the sections above; collapsed by default (see design audit finding #3). */}
         {kase.actionLogs.length > 0 && (
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
-              Case History
-            </p>
+          <CollapsibleSection
+            title="Case History"
+            testId="case-history-toggle"
+            badge={<span className="text-[10px] font-medium tabular-nums text-zinc-400 dark:text-zinc-600">{kase.actionLogs.length}</span>}
+          >
             <div className="space-y-2">
               {kase.actionLogs.map((entry) => (
                 <CaseHistoryItem key={entry.id} entry={entry} />
               ))}
             </div>
-          </div>
+          </CollapsibleSection>
         )}
       </div>
 
