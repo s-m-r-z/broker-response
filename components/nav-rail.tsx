@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Shield, Scale, Gavel, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Home, Shield, Scale, Gavel, Inbox, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './theme-toggle'
 
@@ -10,9 +10,13 @@ interface NavRailProps {
   active: 'home' | 'dashboard' | 'legal' | 'cases'
 }
 
+// Icon deliberately doesn't reuse Shield — that's now the product logo mark
+// at the top of the rail, so "Broker Response" the nav section needs its
+// own distinct icon (Inbox — it's the triage queue) to avoid two identical
+// shields in the same narrow rail.
 const SECTIONS = [
   { id: 'home' as const, label: 'Overview', href: '/', icon: Home },
-  { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Shield },
+  { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Inbox },
   { id: 'cases' as const, label: 'Case Tracker', href: '/case-tracker', icon: Gavel },
   { id: 'legal' as const, label: 'Legal Workbook', href: '/legal-workbook', icon: Scale },
 ]
@@ -58,17 +62,30 @@ export function NavRail({ active }: NavRailProps) {
     <nav
       className={cn(
         'flex h-full shrink-0 flex-col justify-between border-r border-zinc-200 bg-white py-4 transition-[width] dark:border-zinc-800 dark:bg-zinc-950',
-        collapsed ? 'w-14' : 'w-52'
+        collapsed ? 'w-14' : 'w-60'
       )}
     >
       <div>
-        <div className={cn('mb-3 flex px-2', collapsed ? 'justify-center' : 'justify-end')}>
+        {/* Product logo + name, matching the login screen's mark (blue
+            rounded square, Shield icon) — collapses to just the mark. */}
+        <div className={cn('mb-4 flex items-center gap-2 px-3', collapsed ? 'flex-col px-0' : 'justify-between')}>
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 shadow-md shadow-blue-600/20">
+              <Shield className="h-4 w-4 text-white" />
+            </div>
+            {!collapsed && (
+              <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">Broker Response</span>
+            )}
+          </div>
           <button
             onClick={toggleCollapsed}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             data-testid="nav-collapse-toggle"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300 transition-colors"
+            className={cn(
+              'flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300 transition-colors',
+              collapsed && 'mt-1'
+            )}
           >
             {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </button>
