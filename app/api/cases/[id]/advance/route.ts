@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { advanceCaseSchema } from '@/lib/case-validation'
-import { canTransitionStage, getNextStage, isEnforcementStage } from '@/lib/case-tracker'
+import { assertNotClosed, canTransitionStage, getNextStage, isEnforcementStage } from '@/lib/case-tracker'
 import { syncCaseStatus } from '@/lib/case-status-sync'
 
 // Advances a case to the next stage in ENFORCEMENT_STAGES order. The client
@@ -19,6 +19,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   if (!isEnforcementStage(kase.enforcementStage)) {
     return NextResponse.json({ error: `Unknown enforcement stage: ${kase.enforcementStage}` }, { status: 500 })

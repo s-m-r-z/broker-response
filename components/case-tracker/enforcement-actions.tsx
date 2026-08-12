@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2, CheckCircle2 } from 'lucide-react'
+import { Loader2, CheckCircle2, Lock } from 'lucide-react'
 import { type Case } from '@/lib/types'
 import { canTransitionStage, getNextStage, type EnforcementStage } from '@/lib/case-tracker'
 import { STAGE_CONFIG } from '@/lib/constants'
+import { formatRelativeTime } from '@/lib/utils'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 
@@ -39,6 +40,25 @@ export function EnforcementActions({ kase, onAdvance, insertCitation }: Enforcem
   }, [insertCitation])
 
   const nextStage = getNextStage(kase.enforcementStage)
+
+  // Closing a case (evidence checklist complete) makes it read-only
+  // everywhere, not just the evidence checklist — a case can be closed at
+  // any enforcement stage, so this takes priority over the "reached the end
+  // of the pipeline" case below. Also enforced server-side (assertNotClosed
+  // in lib/case-tracker.ts).
+  if (kase.closedAt) {
+    return (
+      <div className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3 dark:text-zinc-600">
+          Enforcement
+        </p>
+        <p className="flex items-center gap-1.5 text-sm text-zinc-500" data-testid="enforcement-locked-notice">
+          <Lock className="h-3.5 w-3.5" />
+          Case closed {formatRelativeTime(kase.closedAt)} — enforcement stage is locked.
+        </p>
+      </div>
+    )
+  }
 
   if (!nextStage) {
     return (

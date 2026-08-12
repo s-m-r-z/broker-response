@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, Save, CheckCircle2, TriangleAlert, ExternalLink, ClipboardCheck, FileText, Scale } from 'lucide-react'
+import { Loader2, Save, CheckCircle2, TriangleAlert, ExternalLink, ClipboardCheck, FileText, Scale, Lock } from 'lucide-react'
 import { type Case, type DraftInsertion } from '@/lib/types'
 import { flagBroadLanguage, findUnresolvedPlaceholders } from '@/lib/draft-flagging'
 import { formatRelativeTime } from '@/lib/utils'
@@ -45,6 +45,11 @@ export function DraftReplyPanel({ kase, onSaved, onOpenStructuredConfirmation }:
   const flags = useMemo(() => flagBroadLanguage(draftText), [draftText])
   const placeholders = useMemo(() => findUnresolvedPlaceholders(draftText), [draftText])
 
+  // Closing a case (evidence checklist complete) is meant to make the whole
+  // case read-only, not just lock the evidence checklist — mirrors the lock
+  // shown there (see evidence-checklist.tsx). Every mutation this panel can
+  // trigger is also blocked server-side (assertNotClosed in lib/case-tracker.ts).
+  const locked = !!kase.closedAt
   const unsaved = draftText !== (kase.draftReply ?? '')
   const isApproved = !!kase.approvedDraftText && kase.approvedDraftText === kase.draftReply
   const approvalStale = !!kase.approvedDraftText && kase.approvedDraftText !== kase.draftReply
@@ -134,23 +139,33 @@ export function DraftReplyPanel({ kase, onSaved, onOpenStructuredConfirmation }:
         )}
       </div>
 
+      {locked && (
+        <p className="mb-3 flex items-center gap-1.5 text-sm text-zinc-500" data-testid="draft-locked-notice">
+          <Lock className="h-3.5 w-3.5" />
+          Case closed {formatRelativeTime(kase.closedAt!)} — draft is read-only.
+        </p>
+      )}
+
       <Textarea
         value={draftText}
         onChange={(e) => setDraftText(e.target.value)}
         placeholder="Draft the reply to file with the complaint — or insert a prior case's reply below to start from precedent."
         rows={8}
+        disabled={locked}
         data-testid="draft-reply-textarea"
       />
 
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-xs text-zinc-400">
-          {saving ? 'Saving…' : unsaved ? 'Unsaved changes' : kase.draftReply ? 'Saved' : ''}
-        </span>
-        <Button size="sm" variant="outline" disabled={saving || !unsaved} onClick={() => saveDraft(draftText)} data-testid="draft-save-button">
-          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Draft
-        </Button>
-      </div>
+      {!locked && (
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-xs text-zinc-400">
+            {saving ? 'Saving…' : unsaved ? 'Unsaved changes' : kase.draftReply ? 'Saved' : ''}
+          </span>
+          <Button size="sm" variant="outline" disabled={saving || !unsaved} onClick={() => saveDraft(draftText)} data-testid="draft-save-button">
+            {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+            Save Draft
+          </Button>
+        </div>
+      )}
 
       {placeholders.length > 0 && (
         <p className="mt-2 rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400" data-testid="draft-placeholder-warning">
@@ -159,7 +174,7 @@ export function DraftReplyPanel({ kase, onSaved, onOpenStructuredConfirmation }:
       )}
 
       {/* Snippet library (US-13) */}
-      <SnippetLibrary kase={kase} onInsert={handleInsertSnippet} />
+      {!locked && <SnippetLibrary kase={kase} onInsert={handleInsertSnippet} />}
 
       {/* Broad-language flags (US-15) */}
       {flags.length > 0 && (
@@ -172,15 +187,17 @@ export function DraftReplyPanel({ kase, onSaved, onOpenStructuredConfirmation }:
               <div key={i} data-testid={`draft-flag-${i}`} className="rounded-md border border-amber-500/20 bg-amber-500/10 p-2.5">
                 <p className="text-xs font-medium text-amber-600 dark:text-amber-400">"{flag.phrase}"</p>
                 <p className="mt-0.5 text-[11px] text-zinc-600 dark:text-zinc-400">{flag.reason}</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-1.5"
-                  onClick={() => handleReplacePhrase(flag.phrase, flag.suggestion)}
-                  data-testid={`draft-flag-replace-${i}`}
-                >
-                  Replace with "{flag.suggestion}"
-                </Button>
+                {!locked && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="mt-1.5"
+                    onClick={() => handleReplacePhrase(flag.phrase, flag.suggestion)}
+                    data-testid={`draft-flag-replace-${i}`}
+                  >
+                    Replace with "{flag.suggestion}"
+                  </Button>
+                )}
               </div>
             ))}
           </div>
@@ -218,29 +235,31 @@ export function DraftReplyPanel({ kase, onSaved, onOpenStructuredConfirmation }:
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
-        <Input
-          value={reviewerName}
-          onChange={(e) => setReviewerName(e.target.value)}
-          placeholder="Reviewer name"
-          data-testid="draft-reviewer-name"
-          className="h-8 w-40 text-xs"
-        />
-        <Button
-          size="sm"
-          disabled={approving || unsaved || !draftText.trim() || !reviewerName.trim()}
-          onClick={handleApprove}
-          title={unsaved ? 'Save your changes before approving' : undefined}
-          data-testid="draft-approve-button"
-        >
-          {approving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ClipboardCheck className="h-3.5 w-3.5" />}
-          Approve for Filing
-        </Button>
-        <Button size="sm" variant="outline" onClick={onOpenStructuredConfirmation} data-testid="draft-open-structured-confirmation">
-          <Scale className="h-3.5 w-3.5" />
-          Request Structured Confirmation
-        </Button>
-      </div>
+      {!locked && (
+        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+          <Input
+            value={reviewerName}
+            onChange={(e) => setReviewerName(e.target.value)}
+            placeholder="Reviewer name"
+            data-testid="draft-reviewer-name"
+            className="h-8 w-40 text-xs"
+          />
+          <Button
+            size="sm"
+            disabled={approving || unsaved || !draftText.trim() || !reviewerName.trim()}
+            onClick={handleApprove}
+            title={unsaved ? 'Save your changes before approving' : undefined}
+            data-testid="draft-approve-button"
+          >
+            {approving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ClipboardCheck className="h-3.5 w-3.5" />}
+            Approve for Filing
+          </Button>
+          <Button size="sm" variant="outline" onClick={onOpenStructuredConfirmation} data-testid="draft-open-structured-confirmation">
+            <Scale className="h-3.5 w-3.5" />
+            Request Structured Confirmation
+          </Button>
+        </div>
+      )}
 
       {error && (
         <p className="mt-2 rounded-md border border-red-500/20 bg-red-50 px-3 py-2 text-xs text-red-600 dark:bg-red-500/10 dark:text-red-400">

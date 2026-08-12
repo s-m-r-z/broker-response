@@ -8,14 +8,17 @@ import { InfoTooltip } from '../info-tooltip'
 interface TagBreakdownProps {
   counts: Record<Tag, number>
   onSelectTag: (tag: Tag) => void
+  onViewAll: () => void
 }
 
-export function TagBreakdown({ counts, onSelectTag }: TagBreakdownProps) {
-  const rows = (Object.keys(TAG_CONFIG) as Tag[])
+export function TagBreakdown({ counts, onSelectTag, onViewAll }: TagBreakdownProps) {
+  const allRows = (Object.keys(TAG_CONFIG) as Tag[])
     .map((tag) => ({ tag, count: counts[tag] ?? 0, config: TAG_CONFIG[tag] }))
     .filter((r) => r.count > 0)
     .sort((a, b) => b.count - a.count)
-    .slice(0, 6)
+
+  const rows = allRows.slice(0, 6)
+  const hiddenCount = allRows.length - rows.length
 
   const max = Math.max(...rows.map((r) => r.count), 1)
 
@@ -45,6 +48,15 @@ export function TagBreakdown({ counts, onSelectTag }: TagBreakdownProps) {
           </button>
         </InfoTooltip>
       ))}
+      {hiddenCount > 0 && (
+        <button
+          onClick={onViewAll}
+          data-testid="tag-breakdown-more"
+          className="w-full text-left text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+        >
+          +{hiddenCount} more tag{hiddenCount === 1 ? '' : 's'} not shown — view all responses
+        </button>
+      )}
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { syncCaseStatus } from '@/lib/case-status-sync'
+import { assertNotClosed } from '@/lib/case-tracker'
 
 // Records that a structured internal confirmation was requested (US-07 AC1:
 // "Sending a confirmation request updates status to Pending internal
@@ -11,6 +12,9 @@ export async function PATCH(_req: NextRequest, { params }: { params: Promise<{ i
   const { id } = await params
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   const [updated] = await prisma.$transaction([
     prisma.case.update({ where: { id }, data: { confirmationRequestedAt: new Date() } }),

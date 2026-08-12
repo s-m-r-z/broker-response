@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { confirmEvidenceSchema } from '@/lib/case-validation'
-import { assertConfirmable, EVIDENCE_ITEM_FIELD, type EvidenceItem } from '@/lib/case-tracker'
+import { assertConfirmable, assertNotClosed, EVIDENCE_ITEM_FIELD, type EvidenceItem } from '@/lib/case-tracker'
 import { EVIDENCE_ITEM_CONFIG } from '@/lib/constants'
 import { syncCaseStatus } from '@/lib/case-status-sync'
 
@@ -20,6 +20,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   const field = EVIDENCE_ITEM_FIELD[item as EvidenceItem] as
     | 'evidenceRequestConfirmedAt'

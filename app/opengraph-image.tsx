@@ -44,7 +44,7 @@ export default function OpengraphImage() {
           </svg>
         </div>
         <div style={{ fontSize: 48, fontWeight: 700, color: '#fafafa' }}>
-          Broker Response
+          Broker Response Manager
         </div>
         <div style={{ fontSize: 24, color: '#a1a1aa', marginTop: 12 }}>
           PureWL Compliance

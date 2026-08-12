@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { structuredConfirmationSchema } from '@/lib/case-validation'
-import { assertConfirmable } from '@/lib/case-tracker'
+import { assertConfirmable, assertNotClosed } from '@/lib/case-tracker'
 import { syncCaseStatus } from '@/lib/case-status-sync'
 import { Prisma } from '@prisma/client'
 
@@ -23,6 +23,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   const now = new Date()
   // Submitting the structured confirmation resolves the outstanding

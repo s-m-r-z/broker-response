@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { approveDraftSchema } from '@/lib/case-validation'
+import { assertNotClosed } from '@/lib/case-tracker'
 
 // Snapshots the current draftReply as approved (US-25). Not immutable —
 // re-approving after an edit is expected, so this always overwrites the
@@ -17,6 +18,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   if (!kase.draftReply || !kase.draftReply.trim()) {
     return NextResponse.json({ error: 'Cannot approve an empty draft.' }, { status: 409 })

@@ -90,7 +90,7 @@ export default function LoginPage() {
             <Shield className="h-6 w-6 text-white" />
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Broker Response</h1>
+            <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Broker Response Manager</h1>
             <p className="mt-1 text-sm text-zinc-500">PureWL Compliance Dashboard</p>
           </div>
         </div>

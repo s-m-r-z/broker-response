@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Send, Loader2 } from 'lucide-react'
 import { type BrokerResponse } from '@/lib/types'
-import { EMAIL_TEMPLATES } from '@/lib/constants'
+import { EMAIL_TEMPLATES, TAG_CONFIG } from '@/lib/constants'
 import {
   Dialog,
   DialogContent,
@@ -60,7 +60,10 @@ export function ComposeDrawer({ open, response, insertCitation, onClose, onSent 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ responseId: response.id, to, subject, body }),
       })
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) {
+        const responseBody = await res.json().catch(() => null)
+        throw new Error(responseBody?.error ?? 'Failed to send email')
+      }
       onSent()
       onClose()
     } catch (e) {
@@ -77,7 +80,7 @@ export function ComposeDrawer({ open, response, insertCitation, onClose, onSent 
           <DialogTitle>Compose Email</DialogTitle>
           {response && (
             <p className="text-xs text-zinc-500 mt-0.5">
-              Re: {response.brokerName} · {response.tag.replace(/_/g, ' ')}
+              Re: {response.brokerName} · {TAG_CONFIG[response.tag].label}
             </p>
           )}
         </DialogHeader>

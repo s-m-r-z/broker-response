@@ -44,9 +44,15 @@ export function HomeOverview() {
     0
   )
 
-  const activeCases = cases.filter((c) => c.enforcementStage !== 'complaint_filed').length
+  // A case stops being "active" once it's either reached the end of the
+  // enforcement pipeline or been closed (evidence complete) — closure is a
+  // separate axis from stage, so a case can be closed at any stage (see
+  // lib/case-tracker.ts). Excluding both here keeps this in sync with the
+  // per-case "Overdue" badge (components/case-tracker/deadline-chip.tsx),
+  // which stops showing urgency for the same two conditions.
+  const activeCases = cases.filter((c) => c.enforcementStage !== 'complaint_filed' && !c.closedAt).length
   const overdueCases = cases.filter(
-    (c) => c.enforcementStage !== 'complaint_filed' && new Date(c.responseDeadlineDate) < new Date()
+    (c) => c.enforcementStage !== 'complaint_filed' && !c.closedAt && new Date(c.responseDeadlineDate) < new Date()
   ).length
   const confirmedCases = cases.filter((c) => c.jurisdictionConfirmedAt && c.authorityConfirmedAt).length
 
@@ -120,7 +126,7 @@ export function HomeOverview() {
               color="text-red-400"
               bgColor="bg-red-500/10"
               barColor="bg-red-500/45"
-              description="Active cases (not yet complaint-filed) whose response deadline has already passed, out of all active cases."
+              description="Active cases (not yet complaint-filed, not closed) whose response deadline has already passed, out of all active cases."
               testId="stat-card-cases-overdue"
               onClick={() => router.push('/case-tracker')}
             />
@@ -285,6 +291,7 @@ export function HomeOverview() {
                 <TagBreakdown
                   counts={counts.byTag}
                   onSelectTag={(tag) => router.push(`/responses?tag=${tag}`)}
+                  onViewAll={() => router.push('/responses')}
                 />
               )}
             </section>

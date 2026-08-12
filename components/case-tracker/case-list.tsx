@@ -97,7 +97,7 @@ export function CaseList({ cases, loading, selectedId, activeStage, search, onSe
                 {c.status !== 'DEADLINE_APPROACHING' && <CaseStatusBadge status={c.status} />}
                 <RegimeBadge regime={c.applicableRegime} />
                 <StageBadge stage={c.enforcementStage} />
-                <DeadlineChip deadline={c.responseDeadlineDate} />
+                <DeadlineChip deadline={c.responseDeadlineDate} isFinal={!!c.closedAt || c.enforcementStage === 'complaint_filed'} />
               </div>
             </div>
           ))

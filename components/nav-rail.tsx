@@ -74,7 +74,7 @@ export function NavRail({ active }: NavRailProps) {
               <Shield className="h-4 w-4 text-white" />
             </div>
             {!collapsed && (
-              <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">Broker Response</span>
+              <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">Broker Response Manager</span>
             )}
           </div>
           <button

@@ -1,4 +1,4 @@
-# Broker Response
+# Broker Response Manager
 
 An internal compliance dashboard for triaging data broker removal responses at scale, escalating non-response cases through enforcement (with drafting, evidence, and filing controls), and maintaining jurisdiction-specific legal reference data. Built for PureWL's compliance workflow.
 

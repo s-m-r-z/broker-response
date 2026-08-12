@@ -128,6 +128,21 @@ export function assertConfirmable(alreadyConfirmedAt: Date | null, label: string
   return { ok: true }
 }
 
+/**
+ * Every mutation route under app/api/cases/[id]/** other than close/route.ts
+ * itself must call this first — closing a case (evidence complete) is meant
+ * to make it read-only, not just lock the evidence checklist. Without this,
+ * a closed case could still have its draft edited, stage advanced, or
+ * confirmations requested via direct API calls even though the UI hides
+ * those controls once closedAt is set.
+ */
+export function assertNotClosed(closedAt: Date | null): ConfirmationResult {
+  if (closedAt) {
+    return { ok: false, error: `Case was closed at ${closedAt.toISOString()} and is now read-only.` }
+  }
+  return { ok: true }
+}
+
 // The evidence-completeness checklist gating case closure (US-19/US-21).
 // Each item maps to a `evidence{Item}ConfirmedAt` field on Case — see
 // prisma/schema.prisma. Order here is display order in the checklist UI.

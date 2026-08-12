@@ -68,10 +68,10 @@ export function ResponseDetail({ response, onCompose, onStatusChange, onTrackCas
     <div className="flex flex-1 flex-col bg-white overflow-hidden dark:bg-zinc-950">
       {/* Header */}
       <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{response.brokerName}</h2>
-            <p className="text-sm text-zinc-500 mt-0.5">{response.brokerEmail}</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">{response.brokerName}</h2>
+            <p className="text-sm text-zinc-500 mt-0.5 truncate">{response.brokerEmail}</p>
           </div>
           <div className="flex flex-col items-end gap-1.5">
             <TagBadge tag={response.tag} />

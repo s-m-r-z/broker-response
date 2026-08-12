@@ -69,21 +69,21 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
     <div className="flex flex-1 flex-col bg-white overflow-hidden dark:bg-zinc-950">
       {/* Header */}
       <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{kase.brokerName}</h2>
-            <p className="text-sm text-zinc-500 mt-0.5 flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" />
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100 truncate">{kase.brokerName}</h2>
+            <p className="text-sm text-zinc-500 mt-0.5 flex items-center gap-1 truncate">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
               {kase.userState ? `${kase.userState}, ${kase.userCountry}` : kase.userCountry}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* DeadlineChip already carries the exact days remaining/overdue —
                 showing the status badge too when it's just restating "late"
                 is redundant noise. The badge earns its place for the other
                 three states, which DeadlineChip can't express. */}
             {kase.status !== 'DEADLINE_APPROACHING' && <CaseStatusBadge status={kase.status} />}
-            <DeadlineChip deadline={kase.responseDeadlineDate} />
+            <DeadlineChip deadline={kase.responseDeadlineDate} isFinal={!!kase.closedAt || kase.enforcementStage === 'complaint_filed'} />
             <RegimeBadge regime={kase.applicableRegime} />
           </div>
         </div>
@@ -94,7 +94,7 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-        {new Date(kase.responseDeadlineDate).getTime() < Date.now() && !kase.closedAt && (
+        {new Date(kase.responseDeadlineDate).getTime() < Date.now() && !kase.closedAt && kase.enforcementStage !== 'complaint_filed' && (
           <div
             data-testid="case-overdue-banner"
             className="flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-500"
@@ -179,6 +179,8 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Confirmed {formatRelativeTime(kase.jurisdictionConfirmedAt)}
                   </span>
+                ) : kase.closedAt ? (
+                  <span className="text-xs text-zinc-400">Case closed</span>
                 ) : (
                   <Button size="sm" variant="outline" disabled={!!confirming} onClick={handleConfirmJurisdiction} data-testid="confirm-jurisdiction-button">
                     {confirming === 'jurisdiction' ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
@@ -196,6 +198,8 @@ export function CaseDetail({ kase, onConfirmJurisdiction, onConfirmAuthority, on
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Confirmed {formatRelativeTime(kase.authorityConfirmedAt)}
                   </span>
+                ) : kase.closedAt ? (
+                  <span className="text-xs text-zinc-400">Case closed</span>
                 ) : (
                   <Button
                     size="sm"

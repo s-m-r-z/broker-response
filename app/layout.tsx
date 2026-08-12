@@ -11,10 +11,10 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Broker Response | PureWL Compliance',
+  title: 'Broker Response Manager | PureWL Compliance',
   description: 'Triage and action broker data removal responses',
   openGraph: {
-    title: 'Broker Response | PureWL Compliance',
+    title: 'Broker Response Manager | PureWL Compliance',
     description: 'Triage and action broker data removal responses',
   },
 }

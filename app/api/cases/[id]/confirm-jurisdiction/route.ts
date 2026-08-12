@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { assertConfirmable } from '@/lib/case-tracker'
+import { assertConfirmable, assertNotClosed } from '@/lib/case-tracker'
 
 // Locks jurisdictionConfirmedAt. Immutable once set — a case cannot reach
 // complaint_eligible without this (enforced in lib/case-tracker.ts).
@@ -8,6 +8,9 @@ export async function PATCH(_req: NextRequest, { params }: { params: Promise<{ i
   const { id } = await params
   const kase = await prisma.case.findUnique({ where: { id } })
   if (!kase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  const closedCheck = assertNotClosed(kase.closedAt)
+  if (!closedCheck.ok) return NextResponse.json({ error: closedCheck.error }, { status: 409 })
 
   const check = assertConfirmable(kase.jurisdictionConfirmedAt, 'Jurisdiction')
   if (!check.ok) {
