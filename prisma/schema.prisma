@@ -179,3 +179,37 @@ model CaseActionLog {
   note      String?
   createdAt DateTime @default(now())
 }
+
+// QA test plan pulled from the Miro board (see docs/test-plan.md), seeded by
+// scripts/seed-test-cases.ts from lib/test-cases-data.ts. `automatable` gates
+// whether the dashboard's Start button runs it via the Playwright harness
+// (lib/test-runner) or opens the manual guided-run panel instead — most of
+// the 81 cases test behavior (live status updates, document versioning,
+// per-role permissions, etc.) this app doesn't actually implement, so they're
+// manual-only regardless of how "automatable" they sound in the abstract.
+model TestCase {
+  id          String    @id @default(cuid())
+  tcId        String    @unique
+  section     String
+  userStory   String
+  type        String
+  scenario    String
+  expected    String
+  automatable Boolean   @default(false)
+  runs        TestRun[]
+}
+
+// One row per execution. AUTOMATED runs are written by the Playwright
+// harness (status RUNNING while in flight, then PASS/FAIL/ERROR); MANUAL
+// runs are written directly as PASS/FAIL once the tester finishes the
+// guided walkthrough — there's no RUNNING state for those.
+model TestRun {
+  id          String    @id @default(cuid())
+  testCaseId  String
+  testCase    TestCase  @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+  mode        String
+  status      String
+  log         String?
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+}

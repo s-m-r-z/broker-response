@@ -225,3 +225,28 @@ export interface LawRegime {
   updatedAt: string
   clauses: LawClause[]
 }
+
+export type TestRunMode = 'AUTOMATED' | 'MANUAL'
+export type TestRunStatus = 'RUNNING' | 'PASS' | 'FAIL' | 'ERROR'
+
+export interface TestRun {
+  id: string
+  testCaseId: string
+  mode: TestRunMode
+  status: TestRunStatus
+  log: string | null
+  startedAt: string
+  completedAt: string | null
+}
+
+export interface TestCase {
+  id: string
+  tcId: string
+  section: string
+  userStory: string
+  type: 'HAPPY' | 'NEGATIVE' | 'EDGE'
+  scenario: string
+  expected: string
+  automatable: boolean
+  runs: TestRun[]
+}

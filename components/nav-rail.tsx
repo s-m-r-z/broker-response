@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Home, Shield, Scale, Gavel, Inbox, LogOut, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { Home, Shield, Scale, Gavel, Inbox, LogOut, PanelLeftClose, PanelLeftOpen, ListChecks } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from './theme-toggle'
 
 interface NavRailProps {
-  active: 'home' | 'dashboard' | 'legal' | 'cases'
+  active: 'home' | 'dashboard' | 'legal' | 'cases' | 'testcases'
 }
 
 // Icon deliberately doesn't reuse Shield — that's now the product logo mark
@@ -19,6 +19,7 @@ const SECTIONS = [
   { id: 'dashboard' as const, label: 'Broker Response', href: '/responses', icon: Inbox },
   { id: 'cases' as const, label: 'Case Tracker', href: '/case-tracker', icon: Gavel },
   { id: 'legal' as const, label: 'Legal Workbook', href: '/legal-workbook', icon: Scale },
+  { id: 'testcases' as const, label: 'Test Cases', href: '/test-cases', icon: ListChecks },
 ]
 
 const COLLAPSE_STORAGE_KEY = 'nav-rail-collapsed'
