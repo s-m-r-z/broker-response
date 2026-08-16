@@ -2,6 +2,21 @@
 
 Pulled from the Miro board (frame `3458764680576788144`, board `uXjVH-kM0y8=`). 81 test cases across 27 user stories, each with a Happy Path, Negative, and Edge Case scenario. Maps closely to the `case-tracker` feature in this repo (jurisdiction/authority confirmation, evidence checklist, draft-flagging, approval-before-filing, version history).
 
+## MoSCoW priority & automated coverage
+
+Priority pulled from the backlog frame on the same Miro board (`3458764679799662713` — "Release 1/2/3" sections, each story tagged Must/Should/Could have).
+
+- **21 Must have**: US-01, 02, 03, 05, 06, 07, 08, 09, 10, 11, 13, 14, 15, 18, 19, 20, 21, 22, 23, 24, 25
+- **5 Should have**: US-04, 12, 16, 17, 26
+- **1 Could have**: US-27
+
+**18 of 21 Must-have stories have at least one automated test** in the `/test-cases` dashboard (`lib/test-runner`), verified against this app's real implementation: US-01, 02, 03, 05, 06, 07, 08, 09, 10, 11, 13, 15, 18, 19, 20, 21, 23, 25.
+
+**3 Must-have stories remain manual-only:**
+- **US-14** (in-context provision currency check) — feasible to automate, just not done yet: it depends on Legal Workbook seed data (`scripts/seed-legal.ts`) having a matching GDPR/Article 17 clause for the `RelevantLawPanel` to surface, which is a cross-feature setup this pass didn't include.
+- **US-22** (shared live case view) — genuine feature gap: this app has one shared team password, not per-user accounts, so there's no "view-only stakeholder" role to test, and no websocket/live push (state only updates on refetch).
+- **US-24** (full edit history with diff) — genuine feature gap: draft edits are logged, but there's no side-by-side version diff view and no per-author filter on history (edits aren't attributed to an individual counsellor in this app's simpler auth model).
+
 ## 01 · Determine Jurisdiction and Authority
 
 | TC | Type | Scenario | Expected |

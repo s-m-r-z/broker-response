@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { type TestCase } from '@/lib/types'
 import { NavRail } from '../nav-rail'
+import { Switch } from '../ui/switch'
 import { TestCaseRow } from './test-case-row'
 import { ManualRunPanel } from './manual-run-panel'
 
@@ -23,6 +24,10 @@ export function TestCaseDashboard() {
   const [loading, setLoading] = useState(true)
   const [runningId, setRunningId] = useState<string | null>(null)
   const [manualTarget, setManualTarget] = useState<TestCase | null>(null)
+  // Off by default — Start actually creates real case records (automated)
+  // or opens a live guided run (manual), so it's an explicit opt-in rather
+  // than available the moment the page loads.
+  const [testingEnabled, setTestingEnabled] = useState(false)
 
   const fetchTestCases = useCallback(async () => {
     const res = await fetch('/api/test-cases')
@@ -76,10 +81,18 @@ export function TestCaseDashboard() {
         <NavRail active="testcases" />
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-            <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Test Cases</h1>
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Pulled from the QA test plan. {summary.automated} of {summary.total} are automated (Playwright, driving this app directly); the rest are guided manual runs.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h1 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Test Cases</h1>
+                <p className="mt-0.5 text-xs text-zinc-500">
+                  Pulled from the QA test plan. {summary.automated} of {summary.total} are automated (Playwright, driving this app directly); the rest are guided manual runs.
+                </p>
+              </div>
+              <label className="flex shrink-0 items-center gap-2 text-xs text-zinc-500">
+                Enable Test Runs
+                <Switch checked={testingEnabled} onCheckedChange={setTestingEnabled} data-testid="test-runs-toggle" />
+              </label>
+            </div>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
               <span className="rounded-md border border-zinc-200 px-2 py-1 text-zinc-500 dark:border-zinc-800">Total: {summary.total}</span>
               <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-emerald-500">Pass: {summary.passed}</span>
@@ -98,7 +111,13 @@ export function TestCaseDashboard() {
                     <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">{section}</p>
                   </div>
                   {cases.map((tc) => (
-                    <TestCaseRow key={tc.id} testCase={tc} running={runningId === tc.id} onStart={handleStart} />
+                    <TestCaseRow
+                      key={tc.id}
+                      testCase={tc}
+                      running={runningId === tc.id}
+                      startDisabled={!testingEnabled}
+                      onStart={handleStart}
+                    />
                   ))}
                 </div>
               ))

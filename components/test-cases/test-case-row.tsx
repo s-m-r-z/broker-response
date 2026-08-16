@@ -8,6 +8,7 @@ import { Button } from '../ui/button'
 interface TestCaseRowProps {
   testCase: TestCase
   running: boolean
+  startDisabled: boolean
   onStart: (testCase: TestCase) => void
 }
 
@@ -57,7 +58,7 @@ function StatusPill({ testCase, running }: { testCase: TestCase; running: boolea
   )
 }
 
-export function TestCaseRow({ testCase, running, onStart }: TestCaseRowProps) {
+export function TestCaseRow({ testCase, running, startDisabled, onStart }: TestCaseRowProps) {
   const lastRun = testCase.runs[0]
   return (
     <div
@@ -92,7 +93,8 @@ export function TestCaseRow({ testCase, running, onStart }: TestCaseRowProps) {
       <Button
         size="sm"
         variant={testCase.automatable ? 'default' : 'outline'}
-        disabled={running}
+        disabled={running || startDisabled}
+        title={startDisabled ? 'Enable Test Runs above to start a test case' : undefined}
         onClick={() => onStart(testCase)}
         data-testid={`test-case-start-${testCase.tcId}`}
         className="shrink-0"
