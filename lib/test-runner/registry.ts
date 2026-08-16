@@ -10,6 +10,7 @@ import { run as tc0901 } from './cases/tc-09-01'
 import { run as tc1001 } from './cases/tc-10-01'
 import { run as tc1101 } from './cases/tc-11-01'
 import { run as tc1301 } from './cases/tc-13-01'
+import { run as tc1401 } from './cases/tc-14-01'
 import { run as tc1501 } from './cases/tc-15-01'
 import { run as tc1801 } from './cases/tc-18-01'
 import { run as tc1901 } from './cases/tc-19-01'
@@ -36,6 +37,7 @@ export const TEST_RUNNERS: Record<string, TestRunner> = {
   'TC-10-01': tc1001,
   'TC-11-01': tc1101,
   'TC-13-01': tc1301,
+  'TC-14-01': tc1401,
   'TC-15-01': tc1501,
   'TC-18-01': tc1801,
   'TC-19-01': tc1901,
