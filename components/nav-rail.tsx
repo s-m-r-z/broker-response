@@ -52,47 +52,79 @@ export function NavRail({ active }: NavRailProps) {
 
   const itemClass = (isActive: boolean) =>
     cn(
-      'flex w-full items-center gap-2.5 rounded-md text-sm transition-colors',
-      collapsed ? 'h-9 justify-center px-0' : 'px-3 py-2',
+      'group relative flex w-full items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150',
+      collapsed ? 'h-9 justify-center px-0' : 'px-3 py-2.5',
       isActive
-        ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
-        : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300'
+        ? 'bg-blue-500/10 text-blue-500 dark:bg-blue-500/10 dark:text-blue-400'
+        : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200'
+    )
+
+  const activeAccent = (isActive: boolean) =>
+    cn(
+      'absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-full transition-all duration-150',
+      isActive
+        ? 'h-5 bg-blue-500'
+        : 'h-0 bg-transparent'
     )
 
   return (
     <nav
       className={cn(
-        'flex h-full shrink-0 flex-col justify-between border-r border-zinc-200 bg-white py-4 transition-[width] dark:border-zinc-800 dark:bg-zinc-950',
-        collapsed ? 'w-14' : 'w-60'
+        'flex h-full shrink-0 flex-col justify-between border-r border-zinc-200 bg-white py-5 transition-[width] duration-200 dark:border-zinc-800 dark:bg-zinc-950',
+        collapsed ? 'w-[60px]' : 'w-[220px]'
       )}
     >
-      <div>
-        {/* Product logo + name, matching the login screen's mark (blue
-            rounded square, Shield icon) — collapses to just the mark. */}
-        <div className={cn('mb-4 flex items-center gap-2 px-3', collapsed ? 'flex-col px-0' : 'justify-between')}>
-          <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 shadow-md shadow-blue-600/20">
-              <Shield className="h-4 w-4 text-white" />
+      {/* Top: logo + nav */}
+      <div className="flex flex-col gap-5">
+
+        {/* Header */}
+        <div className={cn('px-4', collapsed && 'flex flex-col items-center gap-3 px-0')}>
+          {collapsed ? (
+            <>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-sm shadow-blue-600/30">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+              <button
+                onClick={toggleCollapsed}
+                title="Expand sidebar"
+                aria-label="Expand sidebar"
+                data-testid="nav-collapse-toggle"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              >
+                <PanelLeftOpen className="h-3.5 w-3.5" />
+              </button>
+            </>
+          ) : (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 shadow-sm shadow-blue-600/30">
+                  <Shield className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-[13px] font-semibold leading-snug text-zinc-900 dark:text-zinc-100">Broker Response</p>
+                  <p className="text-[11px] leading-snug text-zinc-400 dark:text-zinc-500">Manager</p>
+                </div>
+              </div>
+              <button
+                onClick={toggleCollapsed}
+                title="Collapse sidebar"
+                aria-label="Collapse sidebar"
+                data-testid="nav-collapse-toggle"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              >
+                <PanelLeftClose className="h-3.5 w-3.5" />
+              </button>
             </div>
-            {!collapsed && (
-              <span className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">Broker Response Manager</span>
-            )}
-          </div>
-          <button
-            onClick={toggleCollapsed}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            data-testid="nav-collapse-toggle"
-            className={cn(
-              'flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-500 dark:hover:bg-zinc-900 dark:hover:text-zinc-300 transition-colors',
-              collapsed && 'mt-1'
-            )}
-          >
-            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-          </button>
+          )}
         </div>
 
-        <div className="flex flex-col gap-1 px-2">
+        {/* Nav items */}
+        <div className={cn('flex flex-col gap-0.5', collapsed ? 'px-2' : 'px-3')}>
+          {!collapsed && (
+            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+              Menu
+            </p>
+          )}
           {SECTIONS.map((section) => {
             const isActive = section.id === active
             const Icon = section.icon
@@ -105,15 +137,22 @@ export function NavRail({ active }: NavRailProps) {
                 data-testid={`nav-${section.id}`}
                 className={itemClass(isActive)}
               >
-                <Icon className="h-4 w-4 shrink-0" />
-                {!collapsed && <span className="truncate">{section.label}</span>}
+                {/* Left accent bar — incident.io style */}
+                {!collapsed && <span className={activeAccent(isActive)} />}
+                <Icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-blue-500' : '')} />
+                {!collapsed && <span>{section.label}</span>}
               </button>
             )
           })}
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 px-2">
+      {/* Bottom: theme + logout */}
+      <div className={cn('flex flex-col gap-0.5', collapsed ? 'px-2' : 'px-3')}>
+        <div className={cn(
+          'mb-2 border-t border-zinc-100 dark:border-zinc-800',
+          collapsed ? '-mx-0 pt-3' : '-mx-0 pt-3'
+        )} />
         <ThemeToggle showLabel={!collapsed} />
         <button
           onClick={handleLogout}
