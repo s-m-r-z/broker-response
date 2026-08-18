@@ -120,11 +120,6 @@ export function NavRail({ active }: NavRailProps) {
 
         {/* Nav items */}
         <div className={cn('flex flex-col gap-0.5', collapsed ? 'px-2' : 'px-3')}>
-          {!collapsed && (
-            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
-              Menu
-            </p>
-          )}
           {SECTIONS.map((section) => {
             const isActive = section.id === active
             const Icon = section.icon
